@@ -2,16 +2,19 @@ import { Accordion, Icon } from "semantic-ui-react";
 import { useStore } from "../../stores/store";
 import { useState } from "react";
 import HotelList from "../HotelList/HotelList";
+import { observer } from "mobx-react-lite";
 
-export default function SkiResortList() {
+ function SkiResortList() {
     const {skiResortStore} = useStore()
-    const {resorts, setSelectedResort} = skiResortStore
+    const {resorts, setSelectedResort, selectedResort} = skiResortStore
 
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const handleClick = (resort:any, index: number) => {
         setActiveIndex(activeIndex === index ? null : index); // Toggle accordion
         setSelectedResort(resort)
+        console.log(selectedResort)
       };
+      
   return (
     <Accordion styled>
       {resorts.map((resort, index) => (
@@ -35,3 +38,4 @@ export default function SkiResortList() {
     </Accordion>
   )
 }
+export default observer(SkiResortList)
