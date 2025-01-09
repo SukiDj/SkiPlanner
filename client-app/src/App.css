@@ -1,10 +1,25 @@
 #root {
-  max-width: 1280px;
+  max-width: 1680px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
+.container {
+  display: flex;
+  height: 100vh;
+}
 
+.mapContainer {
+  flex: 4; /* Map takes up 3/4 of the space */
+}
+
+.listContainer {
+  flex: 1; /* Hotel list takes up 1/4 of the space */
+  overflow-y: auto; /* Add scroll if the list overflows */
+  padding: 10px;
+  background-color: #f9f9f9; /* Light background for contrast */
+  border-left: 1px solid #ddd; /* Separator line */
+}
 .logo {
   height: 6em;
   padding: 1.5em;

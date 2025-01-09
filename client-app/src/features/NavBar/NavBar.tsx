@@ -1,0 +1,21 @@
+import { useState } from 'react'
+import { MenuItem, Menu } from 'semantic-ui-react'
+
+export default function NavBar() {
+    const [active,setActive] = useState<string>("Pocetna stranica")
+    const handleClick = (name:string) => setActive(name)
+  return (
+    <Menu tabular>
+        <MenuItem
+          name='Pocetna stranica'
+          active={active === 'Pocetna stranica'}
+          onClick={()=>handleClick('Pocetna stranica')}
+        />
+        <MenuItem
+          name='Isplaniraj odmor'
+          active={active === 'Isplaniraj odmor'}
+          onClick={()=>handleClick('Isplaniraj odmor')}
+        />
+      </Menu>
+  )
+}
