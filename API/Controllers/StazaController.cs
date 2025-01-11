@@ -162,6 +162,24 @@ namespace API.Controllers
             return Ok(staze);
         }
 
+        [HttpGet("VratiStazePoTezini/{skijalisteId}/{tezina}")]
+        public async Task<IActionResult> VratiStazePoTezini(Guid skijalisteId, string tezina)
+        {
+            var staze = await _client.Cypher
+                .Match("(s:Staza)-[:PRIPADA]->(sk:Skijaliste)")
+                .Where((Skijaliste sk) => sk.ID == skijalisteId)
+                .AndWhere((Staza s) => s.Tezina == tezina)
+                .Return(s => s.As<Staza>())
+                .ResultsAsync;
+
+            if (staze == null || !staze.Any())
+            {
+                return NotFound($"Nema staza sa težinom '{tezina}' za skijalište sa ID-jem {skijalisteId}.");
+            }
+
+            return Ok(staze);
+        }
+
         [HttpGet("ProveriPovezanost")]
         public async Task<IActionResult> ProveriPovezanost(Guid stazaId, Guid skijalisteId)
         {
