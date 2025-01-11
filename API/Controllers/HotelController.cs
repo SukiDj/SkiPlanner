@@ -18,7 +18,7 @@ namespace API.Controllers
         {
             var results = await _client.Cypher
                 .Match("(h:Hotel)")
-                .Return(h => h.As<string>())
+                .Return(h => h.As<Hotel>())
                 .ResultsAsync;
 
             return Ok(results);
@@ -52,7 +52,7 @@ namespace API.Controllers
             }
             
             await _client.Cypher
-                .Create("(h:Hotel {ID: $ID, Ime: $Ime, Ocena: $Ocena, Udaljenost: $Udaljenost, CenaDvokrevetneSobe: $CenaDvokrevetneSobe, CenaTrokrevetneSobe: $CenaTrokrevetneSobe, CenaCetvorokrevetneSobe: $CenaCetvorokrevetneSobe, CenaPetokrevetneSobe: $CenaPetokrevetneSobe})")
+                .Create("(h:Hotel {ID: $ID, Ime: $Ime, Ocena: $Ocena, Udaljenost: $Udaljenost, CenaDvokrevetneSobe: $CenaDvokrevetneSobe, CenaTrokrevetneSobe: $CenaTrokrevetneSobe, CenaCetvorokrevetneSobe: $CenaCetvorokrevetneSobe, CenaPetokrevetneSobe: $CenaPetokrevetneSobe, Lat: $Lat, Lng: $Lng})")
                 .WithParams(new
                 {
                     hotel.ID,
@@ -62,7 +62,9 @@ namespace API.Controllers
                     hotel.CenaDvokrevetneSobe,
                     hotel.CenaTrokrevetneSobe,
                     hotel.CenaCetvorokrevetneSobe,
-                    hotel.CenaPetokrevetneSobe
+                    hotel.CenaPetokrevetneSobe,
+                    hotel.Lat,
+                    hotel.Lng
                 })
                 .ExecuteWithoutResultsAsync();
 
@@ -79,7 +81,9 @@ namespace API.Controllers
                 .Return(h => h.As<Hotel>())
                 .ResultsAsync;
 
-            if (existingHotel.SingleOrDefault() == null)
+            var hotel = existingHotel.SingleOrDefault();
+
+            if (hotel == null)
                 return NotFound($"Hotel sa ID-jem {id} ne postoji.");
 
             await _client.Cypher
@@ -89,13 +93,15 @@ namespace API.Controllers
                 .WithParam("azuriraniHotel", new
                 {
                     ID = id,
-                    azuriraniHotel.Ime,
-                    azuriraniHotel.Ocena,
-                    azuriraniHotel.Udaljenost,
-                    azuriraniHotel.CenaDvokrevetneSobe,
-                    azuriraniHotel.CenaTrokrevetneSobe,
-                    azuriraniHotel.CenaCetvorokrevetneSobe,
-                    azuriraniHotel.CenaPetokrevetneSobe
+                    Ime = !string.IsNullOrEmpty(azuriraniHotel.Ime) ? azuriraniHotel.Ime : hotel.Ime,
+                    Ocena = azuriraniHotel.Ocena != default ? azuriraniHotel.Ocena : hotel.Ocena,
+                    Udaljenost = azuriraniHotel.Udaljenost != default ? azuriraniHotel.Udaljenost : hotel.Udaljenost,
+                    CenaDvokrevetneSobe = azuriraniHotel.CenaDvokrevetneSobe != default ? azuriraniHotel.CenaDvokrevetneSobe : hotel.CenaDvokrevetneSobe,
+                    CenaTrokrevetneSobe = azuriraniHotel.CenaTrokrevetneSobe != default ? azuriraniHotel.CenaTrokrevetneSobe : hotel.CenaTrokrevetneSobe,
+                    CenaCetvorokrevetneSobe = azuriraniHotel.CenaCetvorokrevetneSobe != default ? azuriraniHotel.CenaCetvorokrevetneSobe : hotel.CenaCetvorokrevetneSobe,
+                    CenaPetokrevetneSobe = azuriraniHotel.CenaPetokrevetneSobe != default ? azuriraniHotel.CenaPetokrevetneSobe : hotel.CenaPetokrevetneSobe,
+                    Lat = azuriraniHotel.Lat != default ? azuriraniHotel.Lat : hotel.Lat,
+                    Lng = azuriraniHotel.Lng != default ? azuriraniHotel.Lng : hotel.Lng
                 })
                 .ExecuteWithoutResultsAsync();
 

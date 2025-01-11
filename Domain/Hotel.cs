@@ -10,5 +10,8 @@ namespace Domain
         public double CenaTrokrevetneSobe { get; set; }
         public double CenaCetvorokrevetneSobe { get; set; }
         public double CenaPetokrevetneSobe { get; set; }
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+
     }
 }

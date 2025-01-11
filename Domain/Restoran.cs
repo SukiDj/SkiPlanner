@@ -7,5 +7,7 @@ namespace Domain
         public string TipKuhinje { get; set; }
         public double Ocena { get; set; }
         public double ProsecnaCena { get; set; } // prosecna cena npr rucka po osobi
+        public double Lat { get; set; }
+        public double Lng { get; set; }
     }
 }

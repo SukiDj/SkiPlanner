@@ -54,14 +54,16 @@ namespace API.Controllers
             }
 
             await _client.Cypher
-                .Create("(r:Restoran {ID: $ID, Naziv: $Naziv, TipKuhinje: $TipKuhinje, Ocena: $Ocena, ProsecnaCena: $ProsecnaCena})")
+                .Create("(r:Restoran {ID: $ID, Naziv: $Naziv, TipKuhinje: $TipKuhinje, Ocena: $Ocena, ProsecnaCena: $ProsecnaCena, Lat: $Lat, Lng: $Lng})")
                 .WithParams(new
                 {
                     restoran.ID,
                     restoran.Naziv,
                     restoran.TipKuhinje,
                     restoran.Ocena,
-                    restoran.ProsecnaCena
+                    restoran.ProsecnaCena,
+                    restoran.Lat,
+                    restoran.Lng
                 })
                 .ExecuteWithoutResultsAsync();
 
@@ -78,7 +80,9 @@ namespace API.Controllers
                 .Return(r => r.As<Restoran>())
                 .ResultsAsync;
 
-            if (existingRestoran.SingleOrDefault() == null)
+            var restoran = existingRestoran.SingleOrDefault();
+
+            if (restoran == null)
                 return NotFound($"Restoran sa ID-jem {id} ne postoji.");
 
             await _client.Cypher
@@ -88,10 +92,12 @@ namespace API.Controllers
                 .WithParam("azuriraniRestoran", new
                 {
                     ID = id,
-                    azuriraniRestoran.Naziv,
-                    azuriraniRestoran.TipKuhinje,
-                    azuriraniRestoran.Ocena,
-                    azuriraniRestoran.ProsecnaCena
+                    Naziv = !string.IsNullOrEmpty(azuriraniRestoran.Naziv) ? azuriraniRestoran.Naziv : restoran.Naziv,
+                    TipKuhinje = !string.IsNullOrEmpty(azuriraniRestoran.TipKuhinje) ? azuriraniRestoran.TipKuhinje : restoran.TipKuhinje,
+                    Ocena = azuriraniRestoran.Ocena != default ? azuriraniRestoran.Ocena : restoran.Ocena,
+                    ProsecnaCena = azuriraniRestoran.ProsecnaCena != default ? azuriraniRestoran.ProsecnaCena : restoran.ProsecnaCena,
+                    Lat = azuriraniRestoran.Lat != default ? azuriraniRestoran.Lat : restoran.Lat,
+                    Lng = azuriraniRestoran.Lng != default ? azuriraniRestoran.Lng : restoran.Lng
                 })
                 .ExecuteWithoutResultsAsync();
 

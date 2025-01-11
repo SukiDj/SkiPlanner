@@ -77,7 +77,9 @@ namespace API.Controllers
                 .Return(s => s.As<Staza>())
                 .ResultsAsync;
 
-            if (!postoji.Any())
+            var postojecaStaza = postoji.SingleOrDefault();
+
+            if (postojecaStaza == null)
                 return NotFound($"Staza sa ID-jem {id} ne postoji.");
 
             await _client.Cypher
@@ -86,14 +88,14 @@ namespace API.Controllers
                 .Set("s = $staza")
                 .WithParam("staza", new
                 {
-                    staza.ID,
-                    staza.Naziv,
-                    staza.Tezina,
-                    staza.Duzina
+                    ID = id,
+                    Naziv = !string.IsNullOrEmpty(staza.Naziv) ? staza.Naziv : postojecaStaza.Naziv,
+                    Tezina = staza.Tezina != default ? staza.Tezina : postojecaStaza.Tezina,
+                    Duzina = staza.Duzina != default ? staza.Duzina : postojecaStaza.Duzina
                 })
                 .ExecuteWithoutResultsAsync();
 
-            return Ok(staza);
+            return Ok($"Staza sa ID-jem {id} je uspešno azurirana.");
         }
 
         // DELETE: api/Staza/Obrisi/{id}
