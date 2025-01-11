@@ -6,6 +6,5 @@ namespace Domain
         public string Naziv { get; set; }
         public string Tezina { get; set; }
         public double Duzina { get; set; }
-        public Skijaliste Skijaliste { get; set; }
     }
 }
