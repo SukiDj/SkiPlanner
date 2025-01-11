@@ -4,9 +4,16 @@ import Map from './features/Map/Map'
 import NavBar from './features/NavBar/NavBar'
 import HotelList from './features/HotelList/HotelList'
 import SkiResortList from './features/SkiResortsList/SkiResortList'
+import SkiSlopes from './features/SkiSlopes/SkiSlopes'
+import { useStore } from './stores/store'
+import { observer } from 'mobx-react-lite'
 
 function App() {
 
+
+  const {skiResortStore : {selectedResort}} = useStore() 
+
+  
   return (
     <>
     <NavBar/>
@@ -17,12 +24,13 @@ function App() {
       <div className='listContainer'>
         <SkiResortList/>
       </div>
+      
     </div>
-    
+    {selectedResort && <SkiSlopes/>}
     
     </>
     
   )
 }
 
-export default App
+export default observer(App)
