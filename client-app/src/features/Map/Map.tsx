@@ -3,6 +3,8 @@ import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
 import { useStore } from '../../stores/store';
 import { observer } from 'mobx-react-lite';
+import { Card, Icon, Image } from 'semantic-ui-react';
+import CardWithInfo from '../CardWithInfo/CardWithInfo';
 
 function MapComponent() {
   const { hotelStore, skiResortStore } = useStore();
@@ -26,11 +28,19 @@ function MapComponent() {
         />
         {selectedResort && <MapUpdater lat={centerLat} lng={centerLng} />}
         {selectedHotel && (
-          <Marker position={[selectedHotel.lat, selectedHotel.lng]}>
-            <Popup>Ski centar Kopaonik</Popup>
-          </Marker>
+          
+          <>
+          <Marker position={[selectedHotel.lat, selectedHotel.lng]} />
+            
+          <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1000 }}>
+            <CardWithInfo/>
+          </div>
+            
+          </>
         )}
+        
       </MapContainer>
+      
     </div>
   );
 }
