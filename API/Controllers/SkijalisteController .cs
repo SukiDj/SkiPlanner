@@ -133,6 +133,10 @@ namespace API.Controllers
             var skijalistaQuery = _client.Cypher
                 .Match("(sk:Skijaliste)");
 
+            if (!string.IsNullOrEmpty(zahtev.NazivSkijalista))
+                skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.Ime == zahtev.NazivSkijalista);
+
+
             if (zahtev.MinBrojStaza.HasValue)
                     skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
 

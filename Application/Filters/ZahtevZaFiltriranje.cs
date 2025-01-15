@@ -2,6 +2,7 @@ namespace Application.Filters
 {
     public class ZahtevZaFiltriranje
     {
+        public string NazivSkijalista { get; set; }
         public int? MinBrojStaza { get; set; }
         public string Tezina { get; set; } // Težina staze (opcionalno)
         public double? MinDuzinaStaze { get; set; } // Minimalna dužina staze (opcionalno)
