@@ -3,23 +3,32 @@ import { useStore } from "../../stores/store";
 import { useState } from "react";
 import HotelList from "../HotelList/HotelList"; // If you want a separate component for the hotel list
 import { observer } from "mobx-react-lite";
+import RestaurantList from "../RestaurantList/RestaurantList";
+import { SkiResort } from "../../modules/SkiResort";
 
 function SkiResortList() {
-  const { skiResortStore } = useStore();
-  const { resorts, setSelectedResort, selectedResort } = skiResortStore;
+  const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants}, skiSlopeStore:{loadAllSkiSlopes} } = useStore();
+  const { resorts, setSelectedResort, getAllResorts } = skiResortStore;
+  const {loadHotelsForResort} = hotelStore;
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [activeHotel, setActiveHotel] = useState(false);
   const [activeRestaurant, setActiveRestaurant] = useState(false);
 
-  const handleClick = (resort: any, index: number) => {
+  const handleClick = (resort: SkiResort, index: number) => {
     setActiveIndex(activeIndex === index ? null : index); // Toggle resort accordion
     setSelectedResort(resort);
+    loadHotelsForResort(resort.id);
+    loadRestaurants(resort.id);
+    loadAllSkiSlopes(resort.id);
   };
 
   const toggleHotels = () => {
+    
     setActiveHotel(!activeHotel); // Toggle hotels accordion
     setActiveRestaurant(activeRestaurant === true ? false : activeRestaurant)
+    
+
   };
 
   const toggleRestaurants = () => {
@@ -29,8 +38,8 @@ function SkiResortList() {
 
   return (
     <Accordion styled>
-      {resorts.map((resort, index) => (
-        <div key={resort.name}>
+      {getAllResorts.map((resort, index) => (
+        <div key={resort.ime}>
           {/* Resort Header */}
           <Accordion.Title
             active={activeIndex === index}
@@ -38,7 +47,7 @@ function SkiResortList() {
             onClick={() => handleClick(resort, index)}
           >
             <Icon name="dropdown" />
-            {resort.name}
+            {resort.ime}
           </Accordion.Title>
 
           {/* Resort Content */}
@@ -54,7 +63,7 @@ function SkiResortList() {
                 Hotels
               </Accordion.Title>
               <Accordion.Content active={activeHotel}>
-                <HotelList />
+                <HotelList/>
               </Accordion.Content>
             </Accordion>
 
@@ -69,7 +78,7 @@ function SkiResortList() {
                 Restaurants
               </Accordion.Title>
               <Accordion.Content active={activeRestaurant}>
-                
+                <RestaurantList />
               </Accordion.Content>
             </Accordion>
           </Accordion.Content>

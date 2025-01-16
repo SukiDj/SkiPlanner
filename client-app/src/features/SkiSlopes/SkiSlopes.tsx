@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Divider, Header, Icon, Statistic, StatisticGroup, StatisticValue } from "semantic-ui-react";
 import { useStore } from "../../stores/store";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
+import SkiSlopesInfo from "./SkiSlopesInfo";
+import { observer } from "mobx-react-lite";
 
-export default function SkiSlopes() {
+function SkiSlopes() {
     const count1 = useMotionValue(0);
   const rounded1 = useTransform(count1, Math.round);
 
@@ -15,12 +17,14 @@ export default function SkiSlopes() {
 
   const count4 = useMotionValue(0);
   const rounded4 = useTransform(count4, Math.round);
+  const {skiSlopeStore} = useStore();
+  const {numberOfBlackSSlopes,numberOfBlueSSlopes,numberOfGreenSSlopes,numberOfRedSSlopes} = skiSlopeStore;
 
   useEffect(() => {
-    const controls1 = animate(count1, 27, { duration: 2 });
-    const controls2 = animate(count2, 50, { duration: 2 });
-    const controls3 = animate(count3, 35, { duration: 2 });
-    const controls4 = animate(count4, 42, { duration: 2 });
+    const controls1 = animate(count1, numberOfRedSSlopes, { duration: 2 });
+    const controls2 = animate(count2, numberOfBlueSSlopes, { duration: 2 });
+    const controls3 = animate(count3, numberOfGreenSSlopes, { duration: 2 });
+    const controls4 = animate(count4, numberOfBlackSSlopes, { duration: 2 });
 
     return () => {
       controls1.stop();
@@ -28,8 +32,9 @@ export default function SkiSlopes() {
       controls3.stop();
       controls4.stop();
     };
-  }, []);
+  }, [numberOfRedSSlopes,numberOfBlueSSlopes,numberOfGreenSSlopes,numberOfBlackSSlopes]);
 
+  
 
   return (
     <>
@@ -59,14 +64,15 @@ export default function SkiSlopes() {
             <motion.pre>{rounded3}</motion.pre>
           </Statistic.Value>
         </Statistic>
-        <Statistic color='yellow'>
+        <Statistic color='black'>
           <Statistic.Value style={{margin:'10px'}}>
             <motion.pre>{rounded4}</motion.pre>
           </Statistic.Value>
         </Statistic>
       </StatisticGroup>
     </div>
-    
+    <SkiSlopesInfo/>
     </>
   )
 }
+export default observer(SkiSlopes)

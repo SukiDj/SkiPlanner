@@ -13,12 +13,12 @@ export default function CardWithInfo() {
               ui={false}
             />
             <Card.Content>
-              <Card.Header>{selectedHotel!.name}</Card.Header>
+              <Card.Header>{selectedHotel!.ime}</Card.Header>
               <Card.Meta>
                 <span className="date">Joined in 2015</span>
               </Card.Meta>
               <Card.Description>
-                {selectedHotel!.description || "No description available."}
+                {selectedHotel!.udaljenost || "No description available."}
               </Card.Description>
             </Card.Content>
             <Card.Content extra>

@@ -7,26 +7,18 @@ import SkiResortList from './features/SkiResortsList/SkiResortList'
 import SkiSlopes from './features/SkiSlopes/SkiSlopes'
 import { useStore } from './stores/store'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import { Container } from 'semantic-ui-react'
 
 function App() {
-
-
-  const {skiResortStore : {selectedResort}} = useStore() 
-
+  
   
   return (
     <>
     <NavBar/>
-    <div className='container'>
-      <div className='mapContainer'>
-        <Map/>
-      </div>
-      <div className='listContainer'>
-        <SkiResortList/>
-      </div>
-      
-    </div>
-    {selectedResort && <SkiSlopes/>}
+    
+      <Outlet/>
     
     </>
     

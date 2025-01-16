@@ -1,6 +1,12 @@
 export type Hotel = {
-    name:string,
-    description:string,
-    lat:number,
-    lng:number
+    cenaCetvorokrevetneSobe: number;
+    cenaDvokrevetneSobe: number;
+    cenaPetokrevetneSobe: number;
+    cenaTrokrevetneSobe: number;
+    id: string;
+    ime: string;
+    lat: number;
+    lng: number;
+    ocena: number;
+    udaljenost: number;
 }

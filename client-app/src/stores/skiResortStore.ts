@@ -2,33 +2,14 @@ import React from 'react'
 import HotelStore from './hotelStore';
 import { store } from './store';
 import { makeAutoObservable } from 'mobx';
+import { SkiResort } from '../modules/SkiResort';
+import agent from '../api/agent';
 
 export default class SkiResortStore {
  
-    resorts =  [
-        {
-          name: "Kopaonik",
-          lat:43.284695,
-          lng: 20.808437,
-          hotels: [
-            { name: "Hotel A", description: "A luxurious hotel with spa and pool.", lat:43.284695, lng: 20.808437 },
-            { name: "Hotel B", description: "Affordable hotel near the ski slopes.", lat:43.284695, lng: 20.808437 },
-            { name: "Hotel C", description: "Cozy mountain retreat with beautiful views.", lat:43.284695, lng: 20.808437 },
-          ],
-        },
-        {
-          name: "Zlatibor",
-          lat:43.724491,
-          lng: 19.691280,
-          hotels: [
-            { name: "Hotel D", description: "Relaxing hotel in the heart of nature.", lat:43.284695, lng: 20.808437 },
-            { name: "Hotel E", description: "Family-friendly hotel near attractions.", lat:43.284695, lng: 20.808437 },
-          ],
-        },
-      ];
+    resorts =  new Map<string,SkiResort>()
 
     selectedResort : any | undefined = undefined
-    hotels : any = undefined
 
     constructor(){
         makeAutoObservable(this)
@@ -36,7 +17,27 @@ export default class SkiResortStore {
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort
-        store.hotelStore.hotels = resort.hotels
+        store.hotelStore.hotelRegistry = resort.hotels
         console.log(this.selectedResort) 
+    }
+
+    setSkiResort = (skiResort:SkiResort)=>{
+      this.resorts.set(skiResort.id,skiResort);
+    }
+
+    get getAllResorts(){
+      return Array.from(this.resorts.values());
+    }
+
+    loadAllResorts = async () =>{
+      try{
+        const resort : SkiResort[] = await agent.skiResort.list();
+        console.log(resort)
+        resort.forEach(resort=>{
+          this.setSkiResort(resort);
+        });
+      }catch(error){
+        console.log(error)
+      }
     }
 }

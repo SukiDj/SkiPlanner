@@ -1,20 +1,23 @@
 import { List } from "semantic-ui-react";
 import { useStore } from "../../stores/store";
 import './HotelList.css'
+import { observer } from "mobx-react-lite";
 
-export default function HotelList() {
+function HotelList() {
     const {hotelStore} = useStore();
-    const {hotels, setSelectedHotel} = hotelStore
+    const {getHotels, setSelectedHotel} = hotelStore
   return (
     <List animated verticalAlign='middle'>
-      {hotels.map((hotel, index) => (
+      {getHotels.length!==0 && getHotels?.map((hotel, index) => (
         <List.Item key={index} onClick={()=>setSelectedHotel(hotel)} className="listItem">
           <List.Content >
-            <List.Header as="a">{hotel.name}</List.Header>
-            <List.Description>{hotel.description}</List.Description>
+            <List.Header as="a">{hotel.ime}</List.Header>
+            <List.Description>{hotel.udaljenost}</List.Description>
           </List.Content>
         </List.Item>
       ))}
     </List>
   )
 }
+
+export default observer(HotelList)
