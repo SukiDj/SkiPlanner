@@ -6,7 +6,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RedisController : ControllerBase
+    public class RedisController : BaseApiController
     {
         private readonly RedisService _redisService;
 
@@ -39,5 +39,22 @@ namespace API.Controllers
             await _redisService.PublishNotificationAsync("notifikacije", message);
             return Ok("Notifikacija poslana.");
         }
+        [HttpPost("zatvori-stazu")]
+        public async Task<IActionResult> ZatvoriStazu(string ime, string staza)
+        {
+            await _redisService.PublishNotificationAsync("notifikacije", $"🔔 Staza \"{staza}\" na skijalištu \"{ime}\" je zatvorena.");
+            return Ok("Notifikacija poslata.");
+        }
+        [HttpGet("all-ranked-ski-resorts")]
+        public async Task<IActionResult> GetAllRankedSkiResorts(string kriterijum)
+        {
+            var result = await _redisService.GetAllRankedSkiResorts(kriterijum);
+            if (!result.Any())
+            {
+                return NotFound("Nema rangiranih skijališta za izabrani kriterijum.");
+            }
+            return Ok(result);
+        }
+
     }
 }

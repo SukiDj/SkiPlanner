@@ -41,34 +41,34 @@ if (app.Environment.IsDevelopment())
 }
 
 // WebSockets - pocetak
-app.UseWebSockets();
-app.Map("/ws", async context =>
-{
-    if (context.WebSockets.IsWebSocketRequest)
-    {
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        var redisService = context.RequestServices.GetRequiredService<RedisService>();
+// app.UseWebSockets();
+// app.Map("/ws", async context =>
+// {
+//     if (context.WebSockets.IsWebSocketRequest)
+//     {
+//         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+//         var redisService = context.RequestServices.GetRequiredService<RedisService>();
         
-        redisService.SubscribeToNotifications("notifikacije", async (message) =>
-        {
-            if (webSocket.State == WebSocketState.Open)
-            {
-                var buffer = Encoding.UTF8.GetBytes(message);
-                await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-        });
+//         redisService.SubscribeToNotifications("notifikacije", async (message) =>
+//         {
+//             if (webSocket.State == WebSocketState.Open)
+//             {
+//                 var buffer = Encoding.UTF8.GetBytes(message);
+//                 await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+//             }
+//         });
 
-        // Drži konekciju otvorenom dok je klijent povezan
-        while (webSocket.State == WebSocketState.Open)
-        {
-            await Task.Delay(1000);
-        }
-    }
-    else
-    {
-        context.Response.StatusCode = 400;
-    }
-});
+//         // Drži konekciju otvorenom dok je klijent povezan
+//         while (webSocket.State == WebSocketState.Open)
+//         {
+//             await Task.Delay(1000);
+//         }
+//     }
+//     else
+//     {
+//         context.Response.StatusCode = 400;
+//     }
+// });
 // kraj
 
 

@@ -42,5 +42,12 @@ namespace Application.Services
             var subscriber = _redisConnection.GetSubscriber();
             subscriber.Subscribe(channel, (ch, message) => onMessage(message));
         }
+        public async Task<List<string>> GetAllRankedSkiResorts(string kriterijum)
+        {
+            // Dohvata sva skijališta sortirana po rangu od najvišeg ka najnižem
+            var skijalista = await _database.SortedSetRangeByRankAsync($"rangiranje:{kriterijum}", 0, -1, Order.Descending);
+            return skijalista.Select(s => s.ToString()).ToList();
+        }
+
     }
 }
