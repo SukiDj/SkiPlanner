@@ -4,19 +4,22 @@ import skiResortStore from "./skiResortStore";
 import SkiResortStore from "./skiResortStore";
 import RestaurantStore from "./restaurantStore";
 import SkiSlopeStore from "./skiSlopeStore";
+import MapStore from "./mapStore";
 
 interface Store{
     hotelStore:HotelStore,
     skiResortStore : SkiResortStore,
     restaurantStore : RestaurantStore,
-    skiSlopeStore : SkiSlopeStore
+    skiSlopeStore : SkiSlopeStore,
+    mapStore : MapStore
 }
 
 export const store: Store ={
     hotelStore : new HotelStore(),
     skiResortStore : new SkiResortStore(),
     restaurantStore : new RestaurantStore(),
-    skiSlopeStore : new SkiSlopeStore
+    skiSlopeStore : new SkiSlopeStore(),
+    mapStore : new MapStore()
 }
 
 export const StoreContext = createContext(store);

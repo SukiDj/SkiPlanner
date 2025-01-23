@@ -1,5 +1,5 @@
 export type Restaurant ={
-    id: string;
+    id?: string;
     naziv: string;
     tipKuhinje: string;
     ocena: number;

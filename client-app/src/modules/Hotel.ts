@@ -3,7 +3,7 @@ export type Hotel = {
     cenaDvokrevetneSobe: number;
     cenaPetokrevetneSobe: number;
     cenaTrokrevetneSobe: number;
-    id: string;
+    id?: string;
     ime: string;
     lat: number;
     lng: number;

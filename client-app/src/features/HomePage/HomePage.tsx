@@ -6,17 +6,18 @@ import Map from "../Map/Map"
 import { observer } from "mobx-react-lite";
 
  function HomePage() {
-    const {skiResortStore : {selectedResort, loadAllResorts}} = useStore() 
+    const {skiResortStore : {selectedResort, loadAllResorts},mapStore:{setIsCreating}} = useStore() 
     
       useEffect(()=>{
         loadAllResorts();
+        setIsCreating(false);
       },[loadAllResorts])
 
   return (
     <>
         <div className='container'>
             <div className='mapContainer'>
-                <Map/>
+                <Map onLocationSelect={function (lat: number, lng: number): void {} }/>
             </div>
             <div className='listContainer'>
                 <SkiResortList/>

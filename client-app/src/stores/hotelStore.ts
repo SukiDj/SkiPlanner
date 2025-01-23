@@ -7,8 +7,21 @@ export default class HotelStore {
   hotelRegistry = new Map<string,Hotel>();
   selectedHotel : Hotel | undefined = undefined;
 
+
   constructor() {
     makeAutoObservable(this);
+  }
+
+
+
+  createHotel = async (hotel:Hotel) =>{
+    try{
+      await agent.hotel.create(hotel);
+
+    } catch (error)
+    {
+      console.log(error);
+    }
   }
 
   setSelectedHotel = (hotel:Hotel) => {
@@ -16,7 +29,7 @@ export default class HotelStore {
   }
 
   setAllHotels = (hotel:Hotel) =>{
-    this.hotelRegistry.set(hotel.id,hotel);
+    this.hotelRegistry.set(hotel.id!,hotel);
     
   }
 

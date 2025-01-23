@@ -9,8 +9,18 @@ export default class RestaurantStore {
         makeAutoObservable(this);
     }
 
+
+
+    createRestaurant = async (restaurant:Restaurant) =>{
+        try{
+            await agent.restaurant.create(restaurant);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     setRestaurant = (restaurant: Restaurant) =>{
-        this.restaurantRegistry.set(restaurant.id,restaurant);
+        this.restaurantRegistry.set(restaurant.id!,restaurant);
     }
 
     setSelectedRestaurant = (restaurant: Restaurant) =>{

@@ -8,12 +8,12 @@ import agent from '../api/agent';
 export default class SkiResortStore {
  
     resorts =  new Map<string,SkiResort>()
-
     selectedResort : any | undefined = undefined
 
     constructor(){
         makeAutoObservable(this)
     }
+
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort
@@ -22,7 +22,7 @@ export default class SkiResortStore {
     }
 
     setSkiResort = (skiResort:SkiResort)=>{
-      this.resorts.set(skiResort.id,skiResort);
+      this.resorts.set(skiResort.id!,skiResort);
     }
 
     get getAllResorts(){
@@ -38,6 +38,15 @@ export default class SkiResortStore {
         });
       }catch(error){
         console.log(error)
+      }
+    }
+
+    createSkiResort = async (skiResort: SkiResort) =>{
+      try{
+        await agent.skiResort.create(skiResort);
+      }catch (error)
+      {
+        console.log(error);
       }
     }
 }
