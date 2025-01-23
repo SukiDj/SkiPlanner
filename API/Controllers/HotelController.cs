@@ -69,7 +69,7 @@ namespace API.Controllers
             return Ok(hotel);
         }
 
-        [HttpPost("KreirajHotelNaSkijalistu/{id}")]
+        [HttpPost("KreirajHotelNaSkijalistu/{idSkijalista}")]
         public async Task<IActionResult> KreirajHotelNaSkijalistu(Guid idSkijalista, Hotel hotel)
         {
             if (hotel.ID == Guid.Empty)

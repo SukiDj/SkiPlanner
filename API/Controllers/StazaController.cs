@@ -46,7 +46,7 @@ namespace API.Controllers
             return Ok(staza);
         }
 
-        [HttpPost("KreirajNaSkijalistu")]
+        [HttpPost("KreirajNaSkijalistu/{idSkijalista}")]
         public async Task<IActionResult> KreirajStazuNaSkijalistu(Guid idSkijalista, Staza staza)
         {
             if (staza.ID == Guid.Empty)
