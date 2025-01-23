@@ -1,12 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, ButtonGroup } from 'semantic-ui-react'
 import HotelForm from './Forms/HotelForm';
 import RestaurantForm from './Forms/RestaurantForm';
 import SkiResortForm from './Forms/SkiResortForm';
 import SkiSlopeForm from './Forms/SkiSlopeForm';
+import { useStore } from '../../stores/store';
 
 export default function CreatePage() {
     const [activeForm, setActiveForm] = useState<string | null>(null);
+    const {hotelStore,restaurantStore} = useStore();
+    const {selectedHotel, setSelectedHotel} = hotelStore;
+    const {selectedRestaurant,setSelectedRestaurant} = restaurantStore;
+
+    useEffect(()=>{
+      if(selectedHotel)
+        setSelectedHotel(undefined);
+      if(selectedRestaurant)
+        setSelectedRestaurant(undefined);
+    },[])
 
   return (
     <>

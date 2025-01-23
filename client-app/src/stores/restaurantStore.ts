@@ -4,16 +4,15 @@ import agent from "../api/agent";
 
 export default class RestaurantStore {
     restaurantRegistry = new Map<string,Restaurant>();
+    selectedRestaurant : Restaurant | undefined = undefined;
 
     constructor(){
         makeAutoObservable(this);
     }
 
-
-
-    createRestaurant = async (restaurant:Restaurant) =>{
+    createRestaurant = async (id:string,restaurant:Restaurant) =>{
         try{
-            await agent.restaurant.create(restaurant);
+            await agent.restaurant.create(id,restaurant);
         } catch (error) {
             console.log(error);
         }
@@ -23,8 +22,8 @@ export default class RestaurantStore {
         this.restaurantRegistry.set(restaurant.id!,restaurant);
     }
 
-    setSelectedRestaurant = (restaurant: Restaurant) =>{
-        
+    setSelectedRestaurant = (restaurant: Restaurant | undefined) =>{
+        this.selectedRestaurant = restaurant;
     }
 
     get getRestaurants(){

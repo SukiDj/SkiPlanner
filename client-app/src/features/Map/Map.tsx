@@ -11,7 +11,7 @@ interface MapComponentProps {
 }
 
 function MapComponent({ onLocationSelect }: MapComponentProps) {
-  const { hotelStore, skiResortStore, mapStore:{setIsCreating, isCreating} } = useStore();
+  const { hotelStore, skiResortStore, mapStore:{ isCreating} } = useStore();
   const { selectedHotel } = hotelStore;
   const { selectedResort } = skiResortStore;
 
