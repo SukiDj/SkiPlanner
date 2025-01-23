@@ -13,7 +13,6 @@ namespace API.Controllers
             _client = client;
         }
 
-        // GET: api/Staza/VratiSveStaze
         [HttpGet("VratiSveStaze")]
         public async Task<IActionResult> VratiSveStaze()
         {
@@ -25,11 +24,9 @@ namespace API.Controllers
             return Ok(staze);
         }
 
-        // POST: api/Staza/Kreiraj
         [HttpPost("Kreiraj")]
         public async Task<IActionResult> KreirajStazu(Staza staza)
         {
-            // Automatski generiši ID ako nije postavljen
             if (staza.ID == Guid.Empty)
             {
                 staza.ID = Guid.NewGuid();
@@ -49,7 +46,32 @@ namespace API.Controllers
             return Ok(staza);
         }
 
-        // GET: api/Staza/{id}
+        [HttpPost("KreirajNaSkijalistu")]
+        public async Task<IActionResult> KreirajStazuNaSkijalistu(Guid idSkijalista, Staza staza)
+        {
+            if (staza.ID == Guid.Empty)
+            {
+                staza.ID = Guid.NewGuid();
+            }
+
+            await _client.Cypher
+                .Match("(sk:Skijaliste)")
+                .Where((Skijaliste sk) => sk.ID == idSkijalista)
+                .Create("(st:Staza {ID: $ID, Naziv: $Naziv, Tezina: $Tezina, Duzina: $Duzina})")
+                .Create("(st)-[:PRIPADA]->(sk)")
+                .WithParams(new
+                {
+                    staza.ID,
+                    staza.Naziv,
+                    staza.Tezina,
+                    staza.Duzina
+                })
+                .ExecuteWithoutResultsAsync();
+
+            return Ok(staza);
+        }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> VratiStazu(Guid id)
         {
@@ -67,7 +89,6 @@ namespace API.Controllers
             return Ok(rezultat);
         }
 
-        // PUT: api/Staza/Izmeni/{id}
         [HttpPut("Izmeni/{id}")]
         public async Task<IActionResult> IzmeniStazu(Guid id, Staza staza)
         {
@@ -98,7 +119,6 @@ namespace API.Controllers
             return Ok($"Staza sa ID-jem {id} je uspešno azurirana.");
         }
 
-        // DELETE: api/Staza/Obrisi/{id}
         [HttpDelete("Obrisi/{id}")]
         public async Task<IActionResult> ObrisiStazu(Guid id)
         {
@@ -120,7 +140,6 @@ namespace API.Controllers
             return Ok($"Staza sa ID-jem {id} je uspešno obrisana.");
         }
 
-        // POST: api/Staza/PoveziSaSkijalistem
         [HttpPost("PoveziSaSkijalistem")]
         public async Task<IActionResult> PoveziStazuSaSkijalistem(Guid stazaId, Guid skijalisteId)
         {
