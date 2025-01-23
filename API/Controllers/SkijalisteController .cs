@@ -14,7 +14,6 @@ namespace API.Controllers
             _client = client;
         }
 
-        // GET: api/Skijaliste
         [HttpGet("VratiSvaSkijalista")]
         public async Task<IActionResult> VratiSvaSkijalista()
         {
@@ -26,7 +25,6 @@ namespace API.Controllers
             return Ok(results);
         }
 
-        // GET: api/Skijaliste/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> VratiSkijaliste(Guid id)
         {
@@ -44,7 +42,6 @@ namespace API.Controllers
             return Ok(skijaliste);
         }
 
-        // POST: api/Skijaliste
         [HttpPost]
         public async Task<IActionResult> KreirajSkijaliste(Skijaliste skijaliste)
         {
@@ -71,7 +68,6 @@ namespace API.Controllers
             return Ok(skijaliste);
         }
 
-        // PUT: api/Skijaliste/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> AzurirajSkijaliste(Guid id, Skijaliste azuriranoSkijaliste)
         {
@@ -105,7 +101,6 @@ namespace API.Controllers
             return Ok($"Skijalište sa ID-jem {id} je uspešno ažurirano.");
         }
 
-        // DELETE: api/Skijaliste/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiSkijaliste(Guid id)
         {
