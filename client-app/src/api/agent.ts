@@ -28,19 +28,23 @@ const requests = {
 }
 
 const hotel = {
-    listHotelsForResort : (id : string)=> requests.get<Hotel[]>(`Hotel/Skijaliste/${id}/Hoteli`)
+    listHotelsForResort : (id : string)=> requests.get<Hotel[]>(`Hotel/Skijaliste/${id}/Hoteli`),
+    create : (hotel:Hotel) => requests.post<void>('Hotel', hotel)
 }
 
 const skiResort = {
-    list : () => requests.get<SkiResort[]>('Skijaliste/VratiSvaSkijalista')
+    list : () => requests.get<SkiResort[]>('Skijaliste/VratiSvaSkijalista'),
+    create : (skiResort:SkiResort) => requests.post<void>('Skijaliste', skiResort)
 }
 
 const restaurant = {
-    list : (id:string) => requests.get<Restaurant[]>(`Restoran/Skijaliste/${id}/Restorani`)
+    list : (id:string) => requests.get<Restaurant[]>(`Restoran/Skijaliste/${id}/Restorani`),
+    create : (restaurant:Restaurant) => requests.post<void>('Restoran', restaurant)
 }
 
 const skiSlope = {
-    list : (id:string, color : string) => requests.get<SkiSlope[]>(`Staza/VratiStazePoTezini/${id}/${color}`)
+    list : (id:string, color : string) => requests.get<SkiSlope[]>(`Staza/VratiStazePoTezini/${id}/${color}`),
+    create : (skiSlope : SkiSlope) => requests.post<void>('Staza/Kreiraj',skiSlope)
 }
 
 const agent = {

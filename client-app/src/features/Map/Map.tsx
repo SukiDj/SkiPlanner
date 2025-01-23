@@ -1,13 +1,17 @@
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import { FeatureGroup, MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
 import { useStore } from '../../stores/store';
 import { observer } from 'mobx-react-lite';
-import { Card, Icon, Image } from 'semantic-ui-react';
 import CardWithInfo from '../CardWithInfo/CardWithInfo';
+import MapEditControl from './MapEditControl';
 
-function MapComponent() {
-  const { hotelStore, skiResortStore } = useStore();
+interface MapComponentProps {
+  onLocationSelect: (lat: number, lng: number) => void;
+}
+
+function MapComponent({ onLocationSelect }: MapComponentProps) {
+  const { hotelStore, skiResortStore, mapStore:{setIsCreating, isCreating} } = useStore();
   const { selectedHotel } = hotelStore;
   const { selectedResort } = skiResortStore;
 
@@ -38,6 +42,13 @@ function MapComponent() {
             
           </>
         )}
+        {isCreating && 
+        <FeatureGroup>
+        <MapEditControl onLocationSelect={onLocationSelect} />
+      </FeatureGroup>
+        }
+        
+        
         
       </MapContainer>
       

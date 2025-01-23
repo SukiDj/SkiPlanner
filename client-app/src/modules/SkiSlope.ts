@@ -3,4 +3,5 @@ export type SkiSlope={
     naziv: string;
     tezina: string;
     duzina: number;
+    skijaliste?: string;
 }
