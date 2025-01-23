@@ -24,7 +24,6 @@ namespace API.Controllers
             return Ok(results);
         }
 
-        // GET: api/Hotel/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> VratiHotel(Guid id)
         {
@@ -34,7 +33,7 @@ namespace API.Controllers
                 .Return(h => h.As<Hotel>())
                 .ResultsAsync;
 
-            var hotel = hotels.SingleOrDefault(); // Koristi LINQ za dohvaćanje jednog rezultata
+            var hotel = hotels.SingleOrDefault();
 
             if (hotel == null)
                 return NotFound();
@@ -45,7 +44,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> KreirajHotel(Hotel hotel)
         {
-            // Automatski generišemo Guid ako nije poslat
             if (hotel.ID == Guid.Empty)
             {
                 hotel.ID = Guid.NewGuid();
@@ -71,7 +69,37 @@ namespace API.Controllers
             return Ok(hotel);
         }
 
-        // PUT: api/Hotel/{id}
+        [HttpPost]
+        public async Task<IActionResult> KreirajHotelNaSkijalistu(Guid idSkijalista, Hotel hotel)
+        {
+            if (hotel.ID == Guid.Empty)
+            {
+                hotel.ID = Guid.NewGuid();
+            }
+
+            await _client.Cypher
+                .Match("(s:Skijaliste)")
+                .Where((Skijaliste s) => s.ID == idSkijalista)
+                .Create("(h:Hotel {ID: $ID, Ime: $Ime, Ocena: $Ocena, Udaljenost: $Udaljenost, CenaDvokrevetneSobe: $CenaDvokrevetneSobe, CenaTrokrevetneSobe: $CenaTrokrevetneSobe, CenaCetvorokrevetneSobe: $CenaCetvorokrevetneSobe, CenaPetokrevetneSobe: $CenaPetokrevetneSobe, Lat: $Lat, Lng: $Lng})")
+                .Create("(h)-[:NALAZI_SE_U]->(s)")
+                .WithParams(new
+                {
+                    hotel.ID,
+                    hotel.Ime,
+                    hotel.Ocena,
+                    hotel.Udaljenost,
+                    hotel.CenaDvokrevetneSobe,
+                    hotel.CenaTrokrevetneSobe,
+                    hotel.CenaCetvorokrevetneSobe,
+                    hotel.CenaPetokrevetneSobe,
+                    hotel.Lat,
+                    hotel.Lng
+                })
+                .ExecuteWithoutResultsAsync();
+
+            return Ok(hotel);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> AzurirajHotel(Guid id, Hotel azuriraniHotel)
         {
@@ -108,7 +136,6 @@ namespace API.Controllers
             return Ok($"Hotel sa ID-jem {id} je uspešno ažuriran.");
         }
 
-        // DELETE: api/Hotel/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiHotel(Guid id)
         {
@@ -130,7 +157,6 @@ namespace API.Controllers
             return Ok($"Hotel sa ID-jem {id} je uspešno obrisan.");
         }
 
-        // POST: api/Hotel/PoveziSaSkijalistem
         [HttpPost("PoveziSaSkijalistem")]
         public async Task<IActionResult> PoveziHotelSaSkijalistem(Guid hotelId, Guid skijalisteId)
         {
@@ -215,7 +241,5 @@ namespace API.Controllers
 
             return Ok($"Veza između hotela sa ID-jem {hotelId} i skijališta sa ID-jem {skijalisteId} je uspešno obrisana.");
         }
-
-
     }
 }

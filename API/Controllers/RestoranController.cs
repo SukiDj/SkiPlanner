@@ -13,7 +13,6 @@ namespace API.Controllers
             _client = client;
         }
 
-        // GET: api/Restoran
         [HttpGet("VratiSveRestorane")]
         public async Task<IActionResult> VratiSveRestorane()
         {
@@ -25,7 +24,6 @@ namespace API.Controllers
             return Ok(results);
         }
 
-        // GET: api/Restoran/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> VratiRestoran(Guid id)
         {
@@ -43,11 +41,9 @@ namespace API.Controllers
             return Ok(restoran);
         }
 
-        // POST: api/Restoran
         [HttpPost]
         public async Task<IActionResult> KreirajRestoran(Restoran restoran)
         {
-            // Automatski generišemo Guid ako nije poslat
             if (restoran.ID == Guid.Empty)
             {
                 restoran.ID = Guid.NewGuid();
@@ -70,7 +66,35 @@ namespace API.Controllers
             return Ok(restoran);
         }
 
-        // PUT: api/Restoran/{id}
+        [HttpPost]
+        public async Task<IActionResult> KreirajRestoranNaSkijalistu(Guid idSkijalista, Restoran restoran)
+        {
+            if (restoran.ID == Guid.Empty)
+            {
+                restoran.ID = Guid.NewGuid();
+            }
+
+            await _client.Cypher
+                .Match("(s:Skijaliste)")
+                .Where((Skijaliste s) => s.ID == idSkijalista)
+                .Create("(r:Restoran {ID: $ID, Naziv: $Naziv, TipKuhinje: $TipKuhinje, Ocena: $Ocena, ProsecnaCena: $ProsecnaCena, Lat: $Lat, Lng: $Lng})")
+                .Create("(r)-[:PRIPADA]->(s)")
+                .WithParams(new
+                {
+                    restoran.ID,
+                    restoran.Naziv,
+                    restoran.TipKuhinje,
+                    restoran.Ocena,
+                    restoran.ProsecnaCena,
+                    restoran.Lat,
+                    restoran.Lng
+                })
+                .ExecuteWithoutResultsAsync();
+
+            return Ok(restoran);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> AzurirajRestoran(Guid id, Restoran azuriraniRestoran)
         {
@@ -104,7 +128,6 @@ namespace API.Controllers
             return Ok($"Restoran sa ID-jem {id} je uspešno ažuriran.");
         }
 
-        // DELETE: api/Restoran/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiRestoran(Guid id)
         {
@@ -126,11 +149,9 @@ namespace API.Controllers
             return Ok($"Restoran sa ID-jem {id} je uspešno obrisan.");
         }
 
-        // POST: api/Restoran/PoveziSaSkijalistem
         [HttpPost("PoveziSaSkijalistem")]
         public async Task<IActionResult> PoveziRestoranSaSkijalistem(Guid restoranId, Guid skijalisteId)
         {
-            // Proveri da li postoji restoran sa datim ID-jem
             var restoranExists = await _client.Cypher
                 .Match("(r:Restoran)")
                 .Where((Restoran r) => r.ID == restoranId)
@@ -140,7 +161,6 @@ namespace API.Controllers
             if (!restoranExists.Any())
                 return NotFound($"Restoran sa ID-jem {restoranId} ne postoji.");
 
-            // Proveri da li postoji skijalište sa datim ID-jem
             var skijalisteExists = await _client.Cypher
                 .Match("(s:Skijaliste)")
                 .Where((Skijaliste s) => s.ID == skijalisteId)
@@ -150,7 +170,6 @@ namespace API.Controllers
             if (!skijalisteExists.Any())
                 return NotFound($"Skijalište sa ID-jem {skijalisteId} ne postoji.");
 
-            // Kreiraj relaciju između restorana i skijališta
             await _client.Cypher
                 .Match("(r:Restoran)", "(s:Skijaliste)")
                 .Where((Restoran r) => r.ID == restoranId)
@@ -191,6 +210,7 @@ namespace API.Controllers
 
             return Ok($"Restoran sa ID-jem {restoranId} je povezan sa skijalištem sa ID-jem {skijalisteId}.");
         }
+        
         [HttpDelete("ObrisiVezuSaSkijalistem/{restoranId}/{skijalisteId}")]
         public async Task<IActionResult> ObrisiVezuSaSkijalistem(Guid restoranId, Guid skijalisteId)
         {
