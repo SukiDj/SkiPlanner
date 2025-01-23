@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useStore } from '../../../stores/store';
 import * as Yup from 'yup';
 import {v4 as uuid} from "uuid";
@@ -7,12 +7,13 @@ import { Form, Formik } from 'formik';
 import { Button, Divider, Grid, GridColumn, Segment } from 'semantic-ui-react';
 import TextInput from '../../../common/TextInput';
 import Map from '../../Map/Map';
+import SelectInput from '../../../common/SelectInput';
 
 
 
 export default function HotelForm() {
 
-  const{hotelStore:{createHotel}, mapStore:{setIsCreating}} =useStore();
+  const{hotelStore:{createHotel}, mapStore:{setIsCreating}, skiResortStore:{getSkiResortOptions}} =useStore();
   
     useEffect(()=>{
       setIsCreating(true);
@@ -28,6 +29,7 @@ export default function HotelForm() {
         cenaPetokrevetneSobe: Yup.number().required('Unesite cenu petokrevetne sobe'),
         lat: Yup.number().required('Obelezite skijaliste na mapi'),
         lng: Yup.number().required('Obelezite skijaliste na mapi'),
+        skijaliste: Yup.string().required('Izaberite skijaliste')
       });
       const handleFormSubmit = (values: Hotel) => {
           const formattedValues: Hotel = {
@@ -35,7 +37,7 @@ export default function HotelForm() {
             id: uuid()
           };
           console.log('Submitted values:', formattedValues);
-          createHotel(formattedValues);
+          createHotel(formattedValues.skijaliste!,formattedValues);
         };
       
   return (
@@ -50,6 +52,7 @@ export default function HotelForm() {
         cenaPetokrevetneSobe: 0,
         lat: 0,
         lng: 0,
+        skijaliste: ''
       }}
       validationSchema={validation}
       onSubmit={values => handleFormSubmit(values)}
@@ -66,6 +69,7 @@ export default function HotelForm() {
               <TextInput name="cenaTrokrevetneSobe" placeholder="Udaljenost" type="number" />
               <TextInput name="cenaCetvorokrevetneSobe" placeholder="Udaljenost" type="number" />
               <TextInput name="cenaPetokrevetneSobe" placeholder="Udaljenost" type="number" />
+              <SelectInput options={getSkiResortOptions} placeholder="Skijalista" name='skijaliste'/>
               </GridColumn>
               <Divider vertical></Divider>
 

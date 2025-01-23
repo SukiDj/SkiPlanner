@@ -5,12 +5,12 @@ import TextInput from "../../../common/TextInput";
 import SelectInput from "../../../common/SelectInput";
 import { Button } from "semantic-ui-react";
 import { useStore } from "../../../stores/store";
-import { SkiResort } from "../../../modules/SkiResort";
-import { text } from "motion/react-client";
+import {v4 as uuid} from "uuid";
+
 
 export default function SkiSlopeForm() {
 
-    const {skiResortStore:{getAllResorts}} = useStore();
+    const {skiResortStore:{getSkiResortOptions}, skiSlopeStore:{getSkiSlopeColor, create}} = useStore();
 
     const validation = Yup.object({
         naziv: Yup.string().required('Required'),
@@ -19,22 +19,18 @@ export default function SkiSlopeForm() {
         skijaliste: Yup.string().required('Required')
 })
 
-    const skiResortOptions = Array.from(getAllResorts.values()).map((skiResort : SkiResort) =>({
-        key : skiResort.id,
-        text : skiResort.ime,
-        value : skiResort.id
-    }))
+
 
     function hangleFormSubmit(skiSlope: SkiSlope){
-        console.log(skiSlope)
+        const newSlope : SkiSlope = {
+            ...skiSlope,
+            id : uuid()
+        }
+        create(skiSlope.skijaliste!,newSlope);
     }
-    const tezine : string[] = [ "plava", "crvena", "zelena", "crna"]
+   
     
-    const options = tezine.map((value) => ({
-        key: value, // unique key for React
-        text: value, // text displayed in the dropdown
-        value: value, // value for selection
-      }));
+   
 
   return (
     <Formik
@@ -51,9 +47,9 @@ export default function SkiSlopeForm() {
     {({handleSubmit, isSubmitting, isValid, dirty})=>(
         <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
             <TextInput name='naziv' placeholder="Naziv"/>
-            <SelectInput options={options} placeholder="Tezina" name='tezina'/>
+            <SelectInput options={getSkiSlopeColor} placeholder="Tezina" name='tezina'/>
             <TextInput name='duzina' placeholder="Duzina" type="number"/>
-            <SelectInput options={skiResortOptions} placeholder="Skijalista" name='skijaliste'/>
+            <SelectInput options={getSkiResortOptions} placeholder="Skijalista" name='skijaliste'/>
             <Button
                 disabled={isSubmitting || !dirty || !isValid}
                 floated='right'

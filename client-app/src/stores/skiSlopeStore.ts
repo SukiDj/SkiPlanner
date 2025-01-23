@@ -12,8 +12,27 @@ export default class SkiSlopeStore {
     numberOfBlueSSlopes : number = 0;
     numberOfGreenSSlopes : number = 0;
     numberOfBlackSSlopes : number = 0;
+    color : string[] = [ "plava", "crvena", "zelena", "crna"]
+
     constructor(){
         makeAutoObservable(this);
+    }
+
+    create = async (id:string, skiSlope: SkiSlope) =>{
+        try{
+            await agent.skiSlope.create(id,skiSlope);
+
+        } catch(error){
+            console.log(error);
+        }
+    }
+
+    get getSkiSlopeColor(){
+        return  this.color.map((value) => ({
+                key: value, // unique key for React
+                text: value, // text displayed in the dropdown
+                value: value, // value for selection
+              }));
     }
 
     loadRedSSlope = async (id:string) =>{

@@ -14,9 +14,9 @@ export default class HotelStore {
 
 
 
-  createHotel = async (hotel:Hotel) =>{
+  createHotel = async (id:string, hotel:Hotel) =>{
     try{
-      await agent.hotel.create(hotel);
+      await agent.hotel.create(id,hotel);
 
     } catch (error)
     {
@@ -24,7 +24,7 @@ export default class HotelStore {
     }
   }
 
-  setSelectedHotel = (hotel:Hotel) => {
+  setSelectedHotel = (hotel:Hotel | undefined) => {
     this.selectedHotel = hotel
   }
 

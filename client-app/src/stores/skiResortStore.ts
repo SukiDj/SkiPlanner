@@ -1,5 +1,3 @@
-import React from 'react'
-import HotelStore from './hotelStore';
 import { store } from './store';
 import { makeAutoObservable } from 'mobx';
 import { SkiResort } from '../modules/SkiResort';
@@ -14,6 +12,13 @@ export default class SkiResortStore {
         makeAutoObservable(this)
     }
 
+    get getSkiResortOptions(){
+      return Array.from(this.getAllResorts.values()).map((skiResort : SkiResort) =>({
+        key : skiResort.id,
+        text : skiResort.ime,
+        value : skiResort.id
+      }))
+    }
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort

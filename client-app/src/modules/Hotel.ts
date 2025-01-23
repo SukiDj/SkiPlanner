@@ -9,4 +9,5 @@ export type Hotel = {
     lng: number;
     ocena: number;
     udaljenost: number;
+    skijaliste? : string;
 }

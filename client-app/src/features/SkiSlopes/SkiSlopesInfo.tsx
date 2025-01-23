@@ -56,7 +56,7 @@ export default function SkiSlopesInfo() {
         {numberOfBlackSSlopes !==0 &&
             <>
                 <h1>
-                    Zelene Staze
+                    Crne Staze
                 </h1>
                 <CardGroup centered>
                 {

@@ -1,14 +1,10 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import  {Hotel}  from '../modules/Hotel';
 import { SkiResort } from "../modules/SkiResort";
 import { Restaurant } from "../modules/Restaurant";
 import { SkiSlope } from "../modules/SkiSlope";
 
-const sleep =(delay: number) =>{
-    return new Promise((resolve)=>{
-        setTimeout(resolve,delay)
-    })
-}
+
 
 //axios.defaults.baseURL='http://localhost:5000/api';
 axios.defaults.baseURL='http://localhost:5000/api';
@@ -29,7 +25,7 @@ const requests = {
 
 const hotel = {
     listHotelsForResort : (id : string)=> requests.get<Hotel[]>(`Hotel/Skijaliste/${id}/Hoteli`),
-    create : (hotel:Hotel) => requests.post<void>('Hotel', hotel)
+    create : (id:string,hotel:Hotel) => requests.post<void>(`Hotel/KreirajHotelNaSkijalistu/${id}`, hotel)
 }
 
 const skiResort = {
@@ -39,12 +35,12 @@ const skiResort = {
 
 const restaurant = {
     list : (id:string) => requests.get<Restaurant[]>(`Restoran/Skijaliste/${id}/Restorani`),
-    create : (restaurant:Restaurant) => requests.post<void>('Restoran', restaurant)
+    create : (id:string, restaurant:Restaurant) => requests.post<void>(`Restoran/KreirajRestoranNaSkijalistu/${id}`, restaurant)
 }
 
 const skiSlope = {
     list : (id:string, color : string) => requests.get<SkiSlope[]>(`Staza/VratiStazePoTezini/${id}/${color}`),
-    create : (skiSlope : SkiSlope) => requests.post<void>('Staza/Kreiraj',skiSlope)
+    create : (id:string, skiSlope : SkiSlope) => requests.post<void>(`Staza/KreirajNaSkijalistu/${id}`,skiSlope)
 }
 
 const agent = {

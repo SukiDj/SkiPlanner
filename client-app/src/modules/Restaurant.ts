@@ -6,4 +6,5 @@ export type Restaurant ={
     prosecnaCena: number;
     lat: number;
     lng: number;
+    skijaliste?: string;
 }
