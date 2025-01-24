@@ -2,8 +2,9 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardGroup, CardHeader, CardMeta, Container } from 'semantic-ui-react'
 import SkiSlopeCardInfo from './SkiSlopeCardInfo'
 import { useStore } from '../../stores/store'
+import { observer } from 'mobx-react-lite';
 
-export default function SkiSlopesInfo() {
+function SkiSlopesInfo() {
     const {skiSlopeStore} = useStore();
     const {getGreenSkiSlopes,getBlackSkiSlopes,getBlueSkiSlopes,getRedSkiSlopes} = skiSlopeStore;
     const {numberOfBlackSSlopes,numberOfBlueSSlopes,numberOfGreenSSlopes,numberOfRedSSlopes} = skiSlopeStore;
@@ -76,3 +77,4 @@ export default function SkiSlopesInfo() {
   
   )
 }
+export default observer(SkiSlopesInfo);

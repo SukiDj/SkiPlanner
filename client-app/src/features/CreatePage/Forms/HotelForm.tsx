@@ -65,10 +65,10 @@ export default function HotelForm() {
               <TextInput name="ime" placeholder="Naziv" />
               <TextInput name="ocena" placeholder="Ocena" type="number" />
               <TextInput name="udaljenost" placeholder="Udaljenost" type="number" />
-              <TextInput name="cenaDvokrevetneSobe" placeholder="Udaljenost" type="number" />
-              <TextInput name="cenaTrokrevetneSobe" placeholder="Udaljenost" type="number" />
-              <TextInput name="cenaCetvorokrevetneSobe" placeholder="Udaljenost" type="number" />
-              <TextInput name="cenaPetokrevetneSobe" placeholder="Udaljenost" type="number" />
+              <TextInput name="cenaDvokrevetneSobe" placeholder="Cena dvokrevetne sobe" type="number" />
+              <TextInput name="cenaTrokrevetneSobe" placeholder="Cena trokrevetne sobe" type="number" />
+              <TextInput name="cenaCetvorokrevetneSobe" placeholder="Cena cetvorokrevetne sobe" type="number" />
+              <TextInput name="cenaPetokrevetneSobe" placeholder="Cena petokrevetne sobe" type="number" />
               <SelectInput options={getSkiResortOptions} placeholder="Skijalista" name='skijaliste'/>
               </GridColumn>
               <Divider vertical></Divider>

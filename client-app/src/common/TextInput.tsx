@@ -13,7 +13,7 @@ export default function TextInput(props:Props) {
     return (
       <Form.Field error={meta.touched && !!meta.error}>
         <label>{props.label}</label>
-        <input {...field} {...props} />
+        <input {...field} {...props} value={field.value === 0 ? "" : field.value}/>
         {meta.touched && meta.error ? (
           <Label>{meta.error}</Label>
         ) : null}

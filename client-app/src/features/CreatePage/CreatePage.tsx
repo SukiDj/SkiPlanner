@@ -8,16 +8,19 @@ import { useStore } from '../../stores/store';
 
 export default function CreatePage() {
     const [activeForm, setActiveForm] = useState<string | null>(null);
-    const {hotelStore,restaurantStore} = useStore();
+    const {hotelStore,restaurantStore, skiResortStore} = useStore();
     const {selectedHotel, setSelectedHotel} = hotelStore;
     const {selectedRestaurant,setSelectedRestaurant} = restaurantStore;
+    const {selectedResort, setSelectedResort} = skiResortStore;
 
     useEffect(()=>{
       if(selectedHotel)
         setSelectedHotel(undefined);
       if(selectedRestaurant)
         setSelectedRestaurant(undefined);
-    },[])
+      if(selectedResort)
+        setSelectedResort(undefined);
+    },[selectedHotel,selectedRestaurant,selectedResort])
 
   return (
     <>

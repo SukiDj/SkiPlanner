@@ -1,15 +1,19 @@
 import { store } from './store';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { SkiResort } from '../modules/SkiResort';
 import agent from '../api/agent';
 
 export default class SkiResortStore {
  
-    resorts =  new Map<string,SkiResort>()
-    selectedResort : any | undefined = undefined
+    resorts =  new Map<string,SkiResort>();
+    selectedResort : SkiResort | undefined = undefined;
+    isLoading : boolean = false;
 
     constructor(){
         makeAutoObservable(this)
+    }
+    setIsLoading(value:boolean){
+      this.isLoading = value;
     }
 
     get getSkiResortOptions(){
@@ -22,8 +26,6 @@ export default class SkiResortStore {
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort
-        store.hotelStore.hotelRegistry = resort.hotels
-        console.log(this.selectedResort) 
     }
 
     setSkiResort = (skiResort:SkiResort)=>{
@@ -36,11 +38,16 @@ export default class SkiResortStore {
 
     loadAllResorts = async () =>{
       try{
+        this.setIsLoading(true);
         const resort : SkiResort[] = await agent.skiResort.list();
-        console.log(resort)
-        resort.forEach(resort=>{
-          this.setSkiResort(resort);
-        });
+        runInAction(()=>{
+          resort.forEach(resort=>{
+            this.setSkiResort(resort);
+          });
+        })
+        this.setIsLoading(false);
+
+        
       }catch(error){
         console.log(error)
       }

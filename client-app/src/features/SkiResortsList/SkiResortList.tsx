@@ -18,9 +18,9 @@ function SkiResortList() {
   const handleClick = (resort: SkiResort, index: number) => {
     setActiveIndex(activeIndex === index ? null : index); // Toggle resort accordion
     setSelectedResort(resort);
-    loadHotelsForResort(resort.id);
-    loadRestaurants(resort.id);
-    loadAllSkiSlopes(resort.id);
+    loadHotelsForResort(resort.id!);
+    loadRestaurants(resort.id!);
+    loadAllSkiSlopes(resort.id!);
   };
 
   const toggleHotels = () => {

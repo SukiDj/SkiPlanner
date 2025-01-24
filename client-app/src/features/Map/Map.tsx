@@ -3,15 +3,16 @@ import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
 import { useStore } from '../../stores/store';
 import { observer } from 'mobx-react-lite';
-import CardWithInfo from '../CardWithInfo/CardWithInfo';
+import CardWithHotelInfo from '../CardWithInfo/CardWithHotelInfo';
 import MapEditControl from './MapEditControl';
+import CardWithRestaurantInfo from '../CardWithInfo/CardWithRestaurantInfo';
 
 interface MapComponentProps {
   onLocationSelect: (lat: number, lng: number) => void;
 }
 
 function MapComponent({ onLocationSelect }: MapComponentProps) {
-  const { hotelStore, skiResortStore, mapStore:{ isCreating} } = useStore();
+  const { hotelStore, skiResortStore, mapStore:{ isCreating}, restaurantStore:{selectedRestaurant} } = useStore();
   const { selectedHotel } = hotelStore;
   const { selectedResort } = skiResortStore;
 
@@ -31,13 +32,13 @@ function MapComponent({ onLocationSelect }: MapComponentProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {selectedResort && <MapUpdater lat={centerLat} lng={centerLng} />}
-        {selectedHotel && (
+        {(selectedHotel|| selectedRestaurant) && (
           
           <>
-          <Marker position={[selectedHotel.lat, selectedHotel.lng]} />
+          <Marker position={[ selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0, selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0]} />
             
           <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1000 }}>
-            <CardWithInfo/>
+            {selectedHotel ? <CardWithHotelInfo/> : selectedResort && <CardWithRestaurantInfo/>}
           </div>
             
           </>

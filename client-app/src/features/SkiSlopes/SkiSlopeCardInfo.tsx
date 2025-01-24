@@ -1,12 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardMeta } from "semantic-ui-react";
 import { SkiSlope } from "../../modules/SkiSlope";
+import { observer } from "mobx-react-lite";
 
 interface SkiSlopeCardInfoProps {
     index : number;
     skiSlope: SkiSlope;
   }
 
-export default function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
+function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
   return (
     <Card>
         <CardContent index={index}>
@@ -19,3 +20,4 @@ export default function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps
     </Card>
   )
 }
+export default observer(SkiSlopeCardInfo);
