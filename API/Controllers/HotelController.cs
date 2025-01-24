@@ -35,8 +35,8 @@ namespace API.Controllers
 
             var hotel = hotels.SingleOrDefault();
 
-            if (hotel == null)
-                return NotFound();
+            // if (hotel == null)
+            //     return NotFound();
 
             return Ok(hotel);
         }
@@ -197,8 +197,8 @@ namespace API.Controllers
                 .Return(h => h.As<Hotel>())
                 .ResultsAsync;
 
-            if (!hotels.Any())
-                return NotFound($"Nema hotela za skijalište sa ID-jem {skijalisteId}.");
+            // if (!hotels.Any())
+            //     return NotFound($"Nema hotela za skijalište sa ID-jem {skijalisteId}.");
 
             return Ok(hotels);
         }

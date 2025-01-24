@@ -83,8 +83,8 @@ namespace API.Controllers
 
             var rezultat = staza.SingleOrDefault();
 
-            if (rezultat == null)
-                return NotFound();
+            // if (rezultat == null)
+            //     return NotFound();
 
             return Ok(rezultat);
         }

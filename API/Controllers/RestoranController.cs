@@ -35,8 +35,8 @@ namespace API.Controllers
 
             var restoran = restorani.SingleOrDefault();
 
-            if (restoran == null)
-                return NotFound($"Restoran sa ID-jem {id} nije pronađen.");
+            // if (restoran == null)
+            //     return NotFound($"Restoran sa ID-jem {id} nije pronađen.");
 
             return Ok(restoran);
         }
@@ -189,8 +189,8 @@ namespace API.Controllers
                 .Return(r => r.As<Restoran>())
                 .ResultsAsync;
 
-            if (!restorani.Any())
-                return NotFound($"Nema restorana za skijalište sa ID-jem {skijalisteId}.");
+            // if (!restorani.Any())
+            //     return NotFound($"Nema restorana za skijalište sa ID-jem {skijalisteId}.");
 
             return Ok(restorani);
         }
