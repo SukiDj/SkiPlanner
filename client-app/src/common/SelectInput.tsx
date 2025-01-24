@@ -1,5 +1,5 @@
 import { useField } from "formik";
-import { Form, Select } from "semantic-ui-react";
+import { Form, Label, Select } from "semantic-ui-react";
 
 interface Props{
     placeholder : string;
@@ -22,7 +22,7 @@ export default function SelectInput(props:Props) {
             placeholder={props.placeholder}
          />
         {meta.touched && meta.error ? (
-          <div className="error">{meta.error}</div>
+          <Label basic color='red' pointing>{meta.error}</Label>
         ) : null}
       </Form.Field>
     );

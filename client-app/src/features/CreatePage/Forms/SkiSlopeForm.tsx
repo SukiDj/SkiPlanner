@@ -14,7 +14,7 @@ export default function SkiSlopeForm() {
 
     const validation = Yup.object({
         naziv: Yup.string().required('Required'),
-        duzina: Yup.number().required('Required'),
+        duzina: Yup.number().required('Required').min(100, 'Duzina mora da bude minimum 100m'),
         tezina: Yup.string().required('Required'),
         skijaliste: Yup.string().required('Required')
 })

@@ -35,6 +35,7 @@ function MapComponent({ onLocationSelect }: MapComponentProps) {
         {(selectedHotel|| selectedRestaurant) && (
           
           <>
+          <MapUpdater lat={selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0} lng={selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0} />
           <Marker position={[ selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0, selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0]} />
             
           <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1000 }}>

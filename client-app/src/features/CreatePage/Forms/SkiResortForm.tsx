@@ -19,9 +19,9 @@ export default function SkiResortForm() {
   
   const validation = Yup.object({
     ime: Yup.string().required('Unesite ime skijalista'),
-    popularnost: Yup.number().required('Unesite popularnost'),
-    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa'),
-    brojStaza: Yup.number().required('Unesite broj staza'),
+    popularnost: Yup.number().required('Unesite popularnost').min(1, 'Popularnost mora da bude minimum 1'),
+    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(100, 'Cena ski pasa mora da bude veca od nule'),
+    brojStaza: Yup.number().required('Unesite broj staza').min(100, 'Broj staza mora da bude minimum 1'),
     lat: Yup.number().required('Obelezite skijaliste na mapi'),
     lng: Yup.number().required('Obelezite skijaliste na mapi'),
   });

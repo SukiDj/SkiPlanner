@@ -21,12 +21,12 @@ export default function HotelForm() {
 
     const validation = Yup.object({
         ime: Yup.string().required('Unesite ime hotela'),
-        ocena: Yup.number().required('Unesite ocenu'),
-        udaljenost : Yup.number().required('Unesite udaljenost hotela od skijalista'),
-        cenaDvokrevetneSobe: Yup.number().required('Unesite cenu dvokrevetne sobe'),
-        cenaTrokrevetneSobe: Yup.number().required('Unesite cenu trokrevetne sobe'),
-        cenaCetvorokrevetneSobe: Yup.number().required('Unesite cenu cetvorokrevetne sobe'),
-        cenaPetokrevetneSobe: Yup.number().required('Unesite cenu petokrevetne sobe'),
+        ocena: Yup.number().required('Unesite ocenu').min(1, 'Ocena nije pravilno unesena'),
+        udaljenost : Yup.number().required('Unesite udaljenost hotela od skijalista').min(10, 'Udaljenost mora da bude minimum 10m'),
+        cenaDvokrevetneSobe: Yup.number().required('Unesite cenu dvokrevetne sobe').min(1000, 'Cena mora da bude minimum 1000 din'),
+        cenaTrokrevetneSobe: Yup.number().required('Unesite cenu trokrevetne sobe').min(1000, 'Cena mora da bude minimum 1000 din'),
+        cenaCetvorokrevetneSobe: Yup.number().required('Unesite cenu cetvorokrevetne sobe').min(1000, 'Cena mora da bude minimum 1000 din'),
+        cenaPetokrevetneSobe: Yup.number().required('Unesite cenu petokrevetne sobe').min(1000, 'Cena mora da bude minimum 1000 din'),
         lat: Yup.number().required('Obelezite skijaliste na mapi'),
         lng: Yup.number().required('Obelezite skijaliste na mapi'),
         skijaliste: Yup.string().required('Izaberite skijaliste')
