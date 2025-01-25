@@ -66,6 +66,17 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Pronađi i poveži slične hotele
+            await _client.Cypher
+                .Match("(h1:Hotel)", "(h2:Hotel)")
+                .Where("h1.ID = $id AND h2.ID <> $id")
+                .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
+                .WithParam("id", hotel.ID)
+                .ExecuteWithoutResultsAsync();
+
             return Ok(hotel);
         }
 
@@ -96,6 +107,18 @@ namespace API.Controllers
                     hotel.Lng
                 })
                 .ExecuteWithoutResultsAsync();
+
+            // Pronađi i poveži slične hotele
+            await _client.Cypher
+                .Match("(h1:Hotel)", "(h2:Hotel)")
+                .Where("h1.ID = $id AND h2.ID <> $id")
+                .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
+                .WithParam("id", hotel.ID)
+                .ExecuteWithoutResultsAsync();
+
 
             return Ok(hotel);
         }
@@ -132,6 +155,26 @@ namespace API.Controllers
                     Lng = azuriraniHotel.Lng != default ? azuriraniHotel.Lng : hotel.Lng
                 })
                 .ExecuteWithoutResultsAsync();
+
+            // Obrisi postojeće veze sličnosti
+            await _client.Cypher
+                .Match("(h1:Hotel)-[r:SLICAN_HOTEL]-(h2:Hotel)")
+                .Where("h1.ID = $id")
+                .WithParam("id", id)
+                .Delete("r")
+                .ExecuteWithoutResultsAsync();
+
+            // Pronađi i poveži slične hotele
+            await _client.Cypher
+                .Match("(h1:Hotel)", "(h2:Hotel)")
+                .Where("h1.ID = $id AND h2.ID <> $id")
+                .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
+                .WithParam("id", hotel.ID)
+                .ExecuteWithoutResultsAsync();
+
 
             return Ok($"Hotel sa ID-jem {id} je uspešno ažuriran.");
         }
@@ -240,6 +283,24 @@ namespace API.Controllers
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Veza između hotela sa ID-jem {hotelId} i skijališta sa ID-jem {skijalisteId} je uspešno obrisana.");
+        }
+
+        // Funkcija za dodavanje veza sa sličnim hotelima
+        private async Task DodajVezeSaSlicnimHotelima(Hotel hotel)
+        {
+            await _client.Cypher
+                .Match("(h:Hotel)")
+                .Where("h.ID <> $ID")
+                .AndWhere("abs(h.Ocena - $Ocena) <= 0.5")
+                .AndWhere("abs(h.CenaDvokrevetneSobe - $CenaDvokrevetneSobe) <= 100")
+                .Create("(h1:Hotel {ID: $ID})-[r:SLICAN]->(h)")
+                .WithParams(new
+                {
+                    hotel.ID,
+                    hotel.Ocena,
+                    hotel.CenaDvokrevetneSobe
+                })
+                .ExecuteWithoutResultsAsync();
         }
     }
 }

@@ -63,6 +63,17 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Pronađi i poveži slične restorane
+            await _client.Cypher
+                .Match("(r1:Restoran)", "(r2:Restoran)")
+                .Where("r1.ID = $id AND r2.ID <> $id")
+                .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
+                .WithParam("id", restoran.ID)
+                .ExecuteWithoutResultsAsync();
+
             return Ok(restoran);
         }
 
@@ -91,9 +102,19 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Pronađi i poveži slične restorane
+            await _client.Cypher
+                .Match("(r1:Restoran)", "(r2:Restoran)")
+                .Where("r1.ID = $id AND r2.ID <> $id")
+                .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
+                .WithParam("id", restoran.ID)
+                .ExecuteWithoutResultsAsync();
+
             return Ok(restoran);
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> AzurirajRestoran(Guid id, Restoran azuriraniRestoran)
@@ -123,6 +144,25 @@ namespace API.Controllers
                     Lat = azuriraniRestoran.Lat != default ? azuriraniRestoran.Lat : restoran.Lat,
                     Lng = azuriraniRestoran.Lng != default ? azuriraniRestoran.Lng : restoran.Lng
                 })
+                .ExecuteWithoutResultsAsync();
+
+            // Obrisi postojeće veze sličnosti
+            await _client.Cypher
+                .Match("(r1:Restoran)-[s:SLICAN_RESTORAN]-(r2:Restoran)")
+                .Where("r1.ID = $id")
+                .WithParam("id", id)
+                .Delete("s")
+                .ExecuteWithoutResultsAsync();
+                
+            // Pronađi i poveži slične restorane
+            await _client.Cypher
+                .Match("(r1:Restoran)", "(r2:Restoran)")
+                .Where("r1.ID = $id AND r2.ID <> $id")
+                .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
+                .WithParam("id", restoran.ID)
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Restoran sa ID-jem {id} je uspešno ažuriran.");

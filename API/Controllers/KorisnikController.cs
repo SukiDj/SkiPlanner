@@ -14,8 +14,8 @@ namespace API.Controllers
             _client = client;
         }
 
-        [HttpPost("KreirajKorisnika")]
-        public async Task<IActionResult> KreirajKorisnika(Korisnik korisnik)
+        [HttpPost("RegistrujKorisnika")]
+        public async Task<IActionResult> RegistrujKorisnika(Korisnik korisnik)
         {
             if (korisnik.ID == Guid.Empty)
             {
@@ -23,7 +23,7 @@ namespace API.Controllers
             }
 
             await _client.Cypher
-                .Create("(k:Korisnik {ID: $ID, Ime: $Ime, Email: $Email})")
+                .Create("(k:Korisnik {ID: $ID, ImePrezime: $ImePrezime, Email: $Email})")
                 .WithParams(new
                 {
                     korisnik.ID,
@@ -113,5 +113,119 @@ namespace API.Controllers
             return Ok("Poseta uspešno zabeležena.");
         }
 
+        [HttpGet("{korisnikId}/Preporuke")]
+        public async Task<IActionResult> Preporuke(Guid korisnikId)
+        {
+            // Provera da li korisnik postoji
+            var korisnikPostoji = await _client.Cypher
+                .Match("(k:Korisnik)")
+                .Where((Korisnik k) => k.ID == korisnikId)
+                .Return(k => k.As<Korisnik>())
+                .ResultsAsync;
+
+            if (!korisnikPostoji.Any())
+            {
+                return NotFound($"Korisnik sa ID-jem {korisnikId} ne postoji.");
+            }
+
+            var preporuke = new List<Preporuka>();
+
+            var posecenaSkijalista = await _client.Cypher
+                .Match("(k:Korisnik)-[:POSETIO]->(p:Skijaliste)")
+                .Where("k.ID = $korisnikId")
+                .WithParam("korisnikId", korisnikId)
+                .Return(p => p.As<Skijaliste>())
+                .ResultsAsync;
+
+            var listaSkijalista = new List<Skijaliste>(posecenaSkijalista);
+            
+            var slicnaSkijalista = await _client.Cypher
+                .Match("(k:Korisnik)-[:POSETIO]->(p:Skijaliste)")
+                .Match("(p)-[:SLICNO_SKIJALISTE]-(slicno:Skijaliste)")
+                .Where("k.ID = $korisnikId")// NOT EXISTS((k)-[:POSETIO]->(slicno)) AND 
+                .WithParam("korisnikId", korisnikId)
+                .Return(slicno => slicno.As<Skijaliste>())
+                .ResultsAsync;
+
+            listaSkijalista.AddRange(slicnaSkijalista);
+
+
+            foreach (var skijaliste in listaSkijalista)
+            {
+                var listaHotela = new List<Hotel>();
+                var listaRestorana = new List<Restoran>();
+
+                var poseceniHoteli = await _client.Cypher
+                    .Match("(k:Korisnik)-[:POSETIO]->(h:Hotel)")
+                    .Match("(h)-[:NALAZI_SE_U]->(skij:Skijaliste)")
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")
+                    .WithParams(new
+                    {
+                        skijalisteId = skijaliste.ID,
+                        korId = korisnikId
+                    })
+                    .Return(h => h.As<Hotel>())
+                    .ResultsAsync;
+
+                listaHotela.AddRange(poseceniHoteli);
+                
+                var slicniHoteli = await _client.Cypher
+                    .Match("(k:Korisnik)-[:POSETIO]->(h:Hotel)")
+                    .Match("(h)-[:SLICAN_HOTEL]-(slicno:Hotel)")
+                    .Match("(slicno)-[:NALAZI_SE_U]->(skij:Skijaliste)")
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")//  AND NOT EXISTS((k)-[:POSETIO]->(slicno))
+                    .WithParams(new
+                    {
+                        skijalisteId = skijaliste.ID,
+                        korId = korisnikId
+                    })
+                    .Return(slicno => slicno.As<Hotel>())
+                    .ResultsAsync;
+
+                
+                listaHotela.AddRange(slicniHoteli);
+
+
+                var poseceniRestorani = await _client.Cypher
+                    .Match("(k:Korisnik)-[:POSETIO]->(r:Restoran)")
+                    .Match("(r)-[:PRIPADA]->(skij:Skijaliste)")
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")
+                    .WithParams(new
+                    {
+                        skijalisteId = skijaliste.ID,
+                        korId = korisnikId
+                    })
+                    .Return(r => r.As<Restoran>())
+                    .ResultsAsync;
+
+                listaRestorana.AddRange(poseceniRestorani);
+                
+                var slicniRestorani = await _client.Cypher
+                    .Match("(k:Korisnik)-[:POSETIO]->(r:Restoran)")
+                    .Match("(r)-[:SLICAN_RESTORAN]-(slicno:Restoran)")
+                    .Match("(slicno)-[:PRIPADA]->(skij:Skijaliste)")
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")//  AND NOT EXISTS((k)-[:POSETIO]->(slicno))
+                    .WithParams(new
+                    {
+                        skijalisteId = skijaliste.ID,
+                        korId = korisnikId
+                    })
+                    .Return(slicno => slicno.As<Restoran>())
+                    .ResultsAsync;
+
+                listaRestorana.AddRange(slicniRestorani);
+
+                var preporuka = new Preporuka
+                {
+                    Skijaliste = skijaliste,
+                    Hoteli = listaHotela,
+                    Restorani = listaRestorana
+                };
+
+                preporuke.Add(preporuka);
+            }
+
+            return Ok(preporuke);
+        }
     }
 }

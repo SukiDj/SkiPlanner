@@ -65,6 +65,17 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Pronađi i poveži slična skijališta
+            await _client.Cypher
+                .Match("(s1:Skijaliste)", "(s2:Skijaliste)")
+                .Where("s1.ID = $id AND s2.ID <> $id")
+                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
+                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
+                .AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
+                .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
+                .WithParam("id", skijaliste.ID)
+                .ExecuteWithoutResultsAsync();
+
             return Ok(skijaliste);
         }
 
@@ -97,6 +108,25 @@ namespace API.Controllers
                     Lng = azuriranoSkijaliste.Lng != default ? azuriranoSkijaliste.Lng : skijaliste.Lng
                 })
                 .ExecuteWithoutResultsAsync();
+
+            // Obrisi postojeće veze sličnosti
+            await _client.Cypher
+                .Match("(s1:Skijaliste)-[r:SLICNO_SKIJALISTE]-(s2:Skijaliste)")
+                .Where("s1.ID = $id")
+                .WithParam("id", id)
+                .Delete("r")
+                .ExecuteWithoutResultsAsync();
+
+            // Kreiraj nove veze sličnosti
+            await _client.Cypher
+                .Match("(s1:Skijaliste)", "(s2:Skijaliste)")
+                .Where("s1.ID = $id AND s2.ID <> $id")
+                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
+                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
+                .AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
+                .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
+                .WithParam("id", id)
+                .ExecuteWithoutResultsAsync(); 
 
             return Ok($"Skijalište sa ID-jem {id} je uspešno ažurirano.");
         }

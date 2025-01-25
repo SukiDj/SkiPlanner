@@ -23,6 +23,23 @@ namespace API.Controllers
 
             return Ok(staze);
         }
+        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> VratiStazu(Guid id)
+        {
+            var staza = await _client.Cypher
+                .Match("(s:Staza)")
+                .Where((Staza s) => s.ID == id)
+                .Return(s => s.As<Staza>())
+                .ResultsAsync;
+
+            var rezultat = staza.SingleOrDefault();
+
+            // if (rezultat == null)
+            //     return NotFound();
+
+            return Ok(rezultat);
+        }
 
         [HttpPost("Kreiraj")]
         public async Task<IActionResult> KreirajStazu(Staza staza)
@@ -41,6 +58,16 @@ namespace API.Controllers
                     staza.Tezina,
                     staza.Duzina
                 })
+                .ExecuteWithoutResultsAsync();
+
+            // Pronađi i poveži slične staze
+            await _client.Cypher
+                .Match("(s1:Staza)", "(s2:Staza)")
+                .Where("s1.ID = $id AND s2.ID <> $id")
+                .AndWhere("s1.Tezina = s2.Tezina")
+                .AndWhere("abs(s1.Duzina - s2.Duzina) <= 200")
+                .Create("(s1)-[:SLICNA_STAZA]->(s2)")
+                .WithParam("id", staza.ID)
                 .ExecuteWithoutResultsAsync();
 
             return Ok(staza);
@@ -68,25 +95,17 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Pronađi i poveži slične staze
+            await _client.Cypher
+                .Match("(s1:Staza)", "(s2:Staza)")
+                .Where("s1.ID = $id AND s2.ID <> $id")
+                .AndWhere("s1.Tezina = s2.Tezina")
+                .AndWhere("abs(s1.Duzina - s2.Duzina) <= 200")
+                .Create("(s1)-[:SLICNA_STAZA]->(s2)")
+                .WithParam("id", staza.ID)
+                .ExecuteWithoutResultsAsync();
+
             return Ok(staza);
-        }
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> VratiStazu(Guid id)
-        {
-            var staza = await _client.Cypher
-                .Match("(s:Staza)")
-                .Where((Staza s) => s.ID == id)
-                .Return(s => s.As<Staza>())
-                .ResultsAsync;
-
-            var rezultat = staza.SingleOrDefault();
-
-            // if (rezultat == null)
-            //     return NotFound();
-
-            return Ok(rezultat);
         }
 
         [HttpPut("Izmeni/{id}")]
@@ -114,6 +133,24 @@ namespace API.Controllers
                     Tezina = staza.Tezina != default ? staza.Tezina : postojecaStaza.Tezina,
                     Duzina = staza.Duzina != default ? staza.Duzina : postojecaStaza.Duzina
                 })
+                .ExecuteWithoutResultsAsync();
+
+            // Obrisi postojeće veze sličnosti
+            await _client.Cypher
+                .Match("(s1:Staza)-[s:SLICAN_RESTORAN]-(s2:Staza)")
+                .Where("s1.ID = $id")
+                .WithParam("id", id)
+                .Delete("s")
+                .ExecuteWithoutResultsAsync();
+
+            // Pronađi i poveži slične staze
+            await _client.Cypher
+                .Match("(s1:Staza)", "(s2:Staza)")
+                .Where("s1.ID = $id AND s2.ID <> $id")
+                .AndWhere("s1.Tezina = s2.Tezina")
+                .AndWhere("abs(s1.Duzina - s2.Duzina) <= 200")
+                .Create("(s1)-[:SLICNA_STAZA]->(s2)")
+                .WithParam("id", staza.ID)
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Staza sa ID-jem {id} je uspešno azurirana.");
