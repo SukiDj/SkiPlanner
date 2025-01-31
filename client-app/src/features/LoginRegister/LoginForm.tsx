@@ -1,0 +1,61 @@
+import { Form, Formik } from "formik";
+import { Button, Icon, Segment } from "semantic-ui-react";
+import * as Yup from 'yup';
+import TextInput from "../../common/TextInput";
+import { UserLoginForm } from "../../modules/User";
+import { useNavigate } from "react-router-dom";
+
+
+export default function LoginForm() {
+
+    const navigate = useNavigate()
+
+    const validationScheme = Yup.object({
+        email : Yup.string().required("Unesite email"),
+        password : Yup.string().required("Unesite lozinku")
+    })
+    const handleSubmit=(values:UserLoginForm)=>{
+
+    }
+
+  return (
+    <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "50vh",
+    }}>
+        <Segment color='green' style={{width: "500px",
+          padding: "3rem", 
+          borderRadius: "10px", 
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)"}}>
+                <Formik 
+                    initialValues={{email : '', password: ''}}
+                    validationSchema={validationScheme}
+                    onSubmit={(values)=>handleSubmit(values)}
+                >
+                {({handleSubmit, isValid, dirty})=>(
+                    <Form className="ui form" onSubmit={handleSubmit}>
+                        <TextInput name="email" placeholder="Email" />
+                        <TextInput name="password" placeholder="Lozinka" />
+                        <Button
+                            className="left floated"
+                            disabled={!isValid || !dirty}
+                            positive
+                            type="submit"
+                            content="Prijavi se"
+                        />
+                       <Button className="right floated" onClick={()=>navigate('/register')} type="button" style={{backgroundColor:'#48A6A7', color:'white'}}>
+                            Registrij se
+                            <Icon name="arrow right" />
+                            </Button>
+                    </Form>
+                )}
+                </Formik>
+
+        
+    </Segment>
+    </div>
+    
+  )
+}
