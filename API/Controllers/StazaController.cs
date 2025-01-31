@@ -230,10 +230,10 @@ namespace API.Controllers
                 .Return(s => s.As<Staza>())
                 .ResultsAsync;
 
-            if (staze == null || !staze.Any())
-            {
-                return NotFound($"Nema staza sa težinom '{tezina}' za skijalište sa ID-jem {skijalisteId}.");
-            }
+            // if (staze == null || !staze.Any())
+            // {
+            //     return NotFound($"Nema staza sa težinom '{tezina}' za skijalište sa ID-jem {skijalisteId}.");
+            // }
 
             return Ok(staze);
         }
