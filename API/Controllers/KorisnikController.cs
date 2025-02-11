@@ -17,22 +17,64 @@ namespace API.Controllers
         [HttpPost("RegistrujKorisnika")]
         public async Task<IActionResult> RegistrujKorisnika(Korisnik korisnik)
         {
+            var postojeciKorisnici = await _client.Cypher.Match("(k:Korisnik)").Where((Korisnik k) => k.Username == korisnik.Username).Return(k => k.As<Korisnik>()).ResultsAsync;
+            var postojeciKorisnik = postojeciKorisnici.SingleOrDefault();
+
+            if (postojeciKorisnik != null)
+            {
+                if (postojeciKorisnik.Username == korisnik.Username)
+                {
+                    return BadRequest("Korisnik sa unetim korisnickim imenom vec postoji.");
+                }
+                else if (postojeciKorisnik.Email == korisnik.Email)
+                {
+                    return BadRequest("Korisnik sa unetim emailom vec postoji.");
+                }
+                else if (postojeciKorisnik.Telefon == korisnik.Telefon)
+                {
+                    return BadRequest("Korisnik sa unetim brojem telefona vec postoji.");
+                }
+            }
+
             if (korisnik.ID == Guid.Empty)
             {
                 korisnik.ID = Guid.NewGuid();
             }
+            korisnik.Password = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
 
             await _client.Cypher
-                .Create("(k:Korisnik {ID: $ID, ImePrezime: $ImePrezime, Email: $Email})")
+                .Create("(k:Korisnik {ID: $ID, Ime: $Ime, Prezime: $Prezime, Telefon: $Telefon, Email: $Email, Username: $Username, Password: $Password})")
                 .WithParams(new
                 {
                     korisnik.ID,
-                    korisnik.ImePrezime,
-                    korisnik.Email
+                    korisnik.Ime,
+                    korisnik.Prezime,
+                    korisnik.Telefon,
+                    korisnik.Email,
+                    korisnik.Username,
+                    korisnik.Password
                 })
                 .ExecuteWithoutResultsAsync();
 
             return Ok(korisnik);
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginZahtev loginPodaci)
+        {
+            if (string.IsNullOrWhiteSpace(loginPodaci.Email) || string.IsNullOrWhiteSpace(loginPodaci.Password))
+            {
+                return BadRequest(new { Message = "Email i lozinka su obavezni" });
+            }
+
+            var korisnici = await _client.Cypher.Match("(k:Korisnik)").Where((Korisnik k) => k.Email == loginPodaci.Email).Return(k => k.As<Korisnik>()).ResultsAsync;
+            var korisnik = korisnici.SingleOrDefault();
+            if (korisnik == null || !BCrypt.Net.BCrypt.Verify(loginPodaci.Password, korisnik.Password))
+            {
+                return Unauthorized(new { Message = "Neispravan email ili lozinka" });
+            }
+
+            return Ok(new { Message = "Uspesna prijava", korisnik });
         }
 
         [HttpPost("Poseti")]
