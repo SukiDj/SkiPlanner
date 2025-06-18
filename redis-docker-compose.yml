@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    volumes:
+      - redis_volume_data:/data
+    ports:
+      - 6379:6379
+    networks:
+      - skiplanner_network
+  redis_insight:
+    image: redislabs/redisinsight:1.14.0
+    container_name: redis_insight
+    restart: always
+    ports:
+      - 8001:8001
+    volumes:
+      - redis_insight_volume_data:/db
+    networks:
+    - skiplanner_network
+  api:
+    build: .
+    container_name: ski_planner_api
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - Redis__Host=redis
+      - Redis__Port=6379
+    ports:
+      - 5000:5000  # Menjaj ako koristiš drugi port
+    networks:
+      - skiplanner_network
+
+volumes:
+  redis_volume_data:
+  redis_insight_volume_data:
+
+networks:
+  skiplanner_network:
+    driver: bridge

@@ -13,8 +13,28 @@ namespace Application.Services
         {
             _redisConnection = redisConnection;
             _database = _redisConnection.GetDatabase();
+
+            // if (_redisConnection.IsConnected)
+            // {
+            //     Console.WriteLine("Povezano sa Redis serverom!");
+            // }
+            // else
+            // {
+            //     Console.WriteLine("Ne može da se poveže sa Redis serverom.");
+            // }
         }
 
+        public async Task SetValueAsync(string key, string value)
+        {
+            var db = _redisConnection.GetDatabase();
+            await db.StringSetAsync(key, value);
+        }
+
+        public async Task<string> GetValueAsync(string key)
+        {
+            var db = _redisConnection.GetDatabase();
+            return await db.StringGetAsync(key);
+        }
         // Dodavanje ili ažuriranje podataka za skijalište
         public async Task SetSkijalisteAsync(string key, SkijalisteRedis skijaliste)
         {
@@ -28,6 +48,18 @@ namespace Application.Services
             var jsonData = await _database.StringGetAsync(key);
             return jsonData.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<SkijalisteRedis>(jsonData);
         }
+
+        public async Task<IEnumerable<string>> GetAllKeysAsync(string pattern)
+        {
+            var server = _redisConnection.GetServer(_redisConnection.GetEndPoints().First());
+            return server.Keys(pattern: pattern).Select(k => k.ToString());
+        }
+
+        public async Task<bool> DeleteSkijalisteAsync(string ime)
+        {
+            return await _database.KeyDeleteAsync($"skijaliste:{ime}");
+        }
+
 
         // Slanje real-time obaveštenja
         public async Task PublishNotificationAsync(string channel, string message)

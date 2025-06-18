@@ -2,6 +2,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Application.Services;
 using Neo4jClient;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(opt =>{
-    opt.AddPolicy("CorsPolicy", policy => {
-        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyHeader().AllowAnyMethod()
+            .WithOrigins("http://localhost:3000", "https://localhost:3000");
     });
 });
 
@@ -23,15 +27,25 @@ var neo4jConfig = builder.Configuration.GetSection("Neo4j");
 builder.Services.AddSingleton<IGraphClient>(_ =>
 {
     var client = new BoltGraphClient(
-        neo4jConfig["Uri"], 
-        neo4jConfig["Username"], 
+        neo4jConfig["Url"],
+        neo4jConfig["Username"],
         neo4jConfig["Password"]
     );
     client.ConnectAsync().Wait();
     return client;
 });
 
+// Redis registracija
+var redisHost = builder.Configuration["Redis:Host"];
+var redisPort = builder.Configuration["Redis:Port"];
+var redisConnectionString = $"{redisHost}:{redisPort},abortConnect=false";
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+builder.Services.AddSingleton<RedisService>();
+
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -48,7 +62,7 @@ if (app.Environment.IsDevelopment())
 //     {
 //         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 //         var redisService = context.RequestServices.GetRequiredService<RedisService>();
-        
+
 //         redisService.SubscribeToNotifications("notifikacije", async (message) =>
 //         {
 //             if (webSocket.State == WebSocketState.Open)
@@ -80,6 +94,6 @@ app.MapControllers();
 
 app.Run();
 
-// URL: c8e0491a.databases.neo4j.io
+// URL: c8e0491a.databases.neo4j.io, f47061ce.databases.neo4j.io 
 // Username: neo4j
-// Password: kNqsSsTlWRViuCLo3yajzLocmsqvGgr0877jlyZnSm8
+// Password: kNqsSsTlWRViuCLo3yajzLocmsqvGgr0877jlyZnSm8, psol9OKJsb_Tfcrz5wCRphqsWZoPfbS8BlgDFlw07Qo
