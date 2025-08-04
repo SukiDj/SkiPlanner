@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Grid, Segment, Button, Divider, GridColumn } from 'semantic-ui-react';
 import Map from '../../Map/Map';
 import TextInput from '../../../common/TextInput';
@@ -20,8 +20,8 @@ export default function SkiResortForm() {
   const validation = Yup.object({
     ime: Yup.string().required('Unesite ime skijalista'),
     popularnost: Yup.number().required('Unesite popularnost').min(1, 'Popularnost mora da bude minimum 1'),
-    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(100, 'Cena ski pasa mora da bude veca od nule'),
-    brojStaza: Yup.number().required('Unesite broj staza').min(100, 'Broj staza mora da bude minimum 1'),
+    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(500, 'Cena ski pasa mora da bude veca od 500din'),
+    brojStaza: Yup.number().required('Unesite broj staza').min(1, 'Broj staza mora da bude minimum 1'),
     lat: Yup.number().required('Obelezite skijaliste na mapi'),
     lng: Yup.number().required('Obelezite skijaliste na mapi'),
   });

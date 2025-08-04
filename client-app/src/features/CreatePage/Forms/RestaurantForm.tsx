@@ -22,7 +22,7 @@ export default function RestaurantForm() {
         naziv: Yup.string().required('Unesite naziv restorana'),
         tipKuhinje: Yup.string().required('Unesite tip kuhinje'),
         ocena: Yup.number().required('Unesite ocenu').min(1, 'Ocena nije ispravna'),
-        prosecnaCena : Yup.number().required('Unesite prosecnu cenu').min(1000, 'Prosecna cena mora da bude minimum 1000'),
+        prosecnaCena : Yup.number().required('Unesite prosecnu cenu').min(500, 'Prosecna cena mora da bude minimum 500din'),
         lat: Yup.number().required('Obelezite skijaliste na mapi'),
         lng: Yup.number().required('Obelezite skijaliste na mapi'),
         skijaliste: Yup.string().required('Izaberite skijaliste')

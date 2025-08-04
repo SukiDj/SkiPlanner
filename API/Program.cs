@@ -42,6 +42,8 @@ var redisConnectionString = $"{redisHost}:{redisPort},abortConnect=false";
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
 builder.Services.AddSingleton<RedisService>();
+builder.Services.AddSingleton<WebSocketService>();
+builder.Services.AddSingleton<SubscriptionService>();
 
 
 var app = builder.Build();
@@ -54,6 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+#region WebSocket
 // WebSockets - pocetak
 // app.UseWebSockets();
 // app.Map("/ws", async context =>
@@ -84,6 +87,23 @@ if (app.Environment.IsDevelopment())
 //     }
 // });
 // kraj
+#endregion WebSocket
+
+app.UseWebSockets();
+
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/ws/notifications")
+    {
+        var wsService = context.RequestServices.GetRequiredService<WebSocketService>();
+        await wsService.HandleWebSocketAsync(context);
+    }
+    else
+    {
+        await next();
+    }
+});
 
 
 app.UseCors("CorsPolicy");
@@ -94,6 +114,6 @@ app.MapControllers();
 
 app.Run();
 
-// URL: c8e0491a.databases.neo4j.io, f47061ce.databases.neo4j.io 
+// URL: ed558763.databases.neo4j.io
 // Username: neo4j
-// Password: kNqsSsTlWRViuCLo3yajzLocmsqvGgr0877jlyZnSm8, psol9OKJsb_Tfcrz5wCRphqsWZoPfbS8BlgDFlw07Qo
+// Password: 7Qg286T0YdT94NXQd3pSjRoGB7tPQRbrj2pkKxf_-Jc

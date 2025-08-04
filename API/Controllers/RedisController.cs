@@ -10,10 +10,13 @@ namespace API.Controllers
     public class RedisController : BaseApiController
     {
         private readonly RedisService _redisService;
+        private readonly SubscriptionService _subscriptionService;
+        private static readonly Dictionary<string, List<string>> korisnikPretplate = new();
 
-        public RedisController(RedisService redisService)
+        public RedisController(RedisService redisService, SubscriptionService subscriptionService)
         {
             _redisService = redisService;
+            _subscriptionService = subscriptionService;
         }
 
         [HttpGet("test-redis")]
@@ -23,7 +26,6 @@ namespace API.Controllers
             return Ok(await _redisService.GetValueAsync("message"));
         }
 
-        // API za dodavanje novog skijališta
         [HttpPost("skijaliste/dodaj")]
         public async Task<IActionResult> DodajSkijaliste([FromBody] SkijalisteRedis skijaliste)
         {
@@ -37,14 +39,38 @@ namespace API.Controllers
             return Ok("Skijalište uspešno dodato.");
         }
 
-        // API za ažuriranje postojećeg skijališta
         [HttpPut("skijaliste/azuriraj")]
         public async Task<IActionResult> AzurirajSkijaliste([FromBody] SkijalisteRedis skijaliste)
         {
+            var promena = "";
             var existing = await _redisService.GetSkijalisteAsync($"skijaliste:{skijaliste.Ime}");
             if (existing == null)
             {
                 return NotFound("Skijalište ne postoji. Koristite POST za dodavanje.");
+            }
+
+            if (Math.Abs(skijaliste.BrojSkijasa - existing.BrojSkijasa) >= 5)
+            {
+                promena += $"📈 Skijalište '{skijaliste.Ime}': broj skijaša se promenio sa {existing.BrojSkijasa} na {skijaliste.BrojSkijasa}.\n";
+            }
+            if (existing.SlobodnihParkingMesta != skijaliste.SlobodnihParkingMesta)
+            {
+                promena += $"🅿️ Skijalište '{skijaliste.Ime}': broj slobodnih parking mesta: {skijaliste.SlobodnihParkingMesta}.\n";
+            }
+            if (existing.OtvorenihStaza != skijaliste.OtvorenihStaza)
+            {
+                promena += $"⛷️ Skijalište '{skijaliste.Ime}': broj otvorenih staza: {skijaliste.OtvorenihStaza}.\n";
+            }
+            if (existing.ZatvorenihStaza != skijaliste.ZatvorenihStaza)
+            {
+                promena += $"⛷️ Skijalište '{skijaliste.Ime}': broj zatvorenih staza: {skijaliste.ZatvorenihStaza}.\n";
+            }
+
+            if (!string.IsNullOrEmpty(promena))
+            {
+                await _redisService.PublishNotificationAsync("notifikacije", promena.Trim());
+                await _subscriptionService.NotifySubscribersAsync(skijaliste.Ime, $"📢 Skijalište {skijaliste.Ime} je ažurirano!");
+
             }
 
             await _redisService.SetSkijalisteAsync($"skijaliste:{skijaliste.Ime}", skijaliste);
@@ -69,7 +95,6 @@ namespace API.Controllers
             return Ok(skijalista);
         }
 
-        // API za dohvatanje podataka za skijalište
         [HttpGet("skijaliste/{ime}")]
         public async Task<IActionResult> VratiSkijaliste(string ime)
         {
@@ -78,7 +103,7 @@ namespace API.Controllers
             return Ok(skijaliste);
         }
 
-        [HttpDelete("skijaliste/{ime}")]
+        [HttpDelete("obrisiSkijaliste/{ime}")]
         public async Task<IActionResult> DeleteSkijaliste(string ime)
         {
             bool deleted = await _redisService.DeleteSkijalisteAsync(ime);
@@ -91,13 +116,23 @@ namespace API.Controllers
         //------------------------------------------------------------------------------------------------
         // Pub/Sub
         //------------------------------------------------------------------------------------------------
-        
+
+        [HttpPost("pretplata")]
+        public IActionResult PretplatiSe(string korisnikId, string skijaliste)
+        {
+            if (!korisnikPretplate.ContainsKey(korisnikId))
+                korisnikPretplate[korisnikId] = new List<string>();
+
+            korisnikPretplate[korisnikId].Add(skijaliste);
+            return Ok($"Korisnik {korisnikId} je pretplaćen na {skijaliste}.");
+        }
+
         // API za slanje obaveštenja
         [HttpPost("notifikacija")]
         public async Task<IActionResult> SendNotification([FromBody] string message)
         {
             await _redisService.PublishNotificationAsync("notifikacije", message);
-            return Ok("Notifikacija poslana.");
+            return Ok("Notifikacija poslata.");
         }
         [HttpPost("zatvori-stazu")]
         public async Task<IActionResult> ZatvoriStazu(string ime, string staza)

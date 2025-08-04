@@ -6,6 +6,7 @@ import Map from "../Map/Map"
 import { observer } from "mobx-react-lite";
 import { Loader } from "semantic-ui-react";
 import LoadingComponent from "../../layout/LoadingComponent";
+import WebSocketNotifications from "./WebSocketNotification";
 
  function HomePage() {
     const {skiResortStore : {selectedResort, loadAllResorts, isLoading},mapStore:{setIsCreating}} = useStore() 
@@ -30,6 +31,9 @@ import LoadingComponent from "../../layout/LoadingComponent";
             
         </div>
         {selectedResort && <SkiSlopes/>}
+
+        {/* Notifikacije */}
+        <WebSocketNotifications />
     </>
   )
 }
