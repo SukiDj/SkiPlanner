@@ -1,15 +1,16 @@
-import { Accordion, Icon } from "semantic-ui-react";
+import { Accordion, Button, Icon, Modal } from "semantic-ui-react";
 import { useStore } from "../../stores/store";
 import { useState } from "react";
 import HotelList from "../HotelList/HotelList"; // If you want a separate component for the hotel list
 import { observer } from "mobx-react-lite";
 import RestaurantList from "../RestaurantList/RestaurantList";
 import { SkiResort } from "../../modules/SkiResort";
+import SkiResortForm from "../CreatePage/Forms/SkiResortForm";
 
 function SkiResortList() {
-  const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants}, skiSlopeStore:{loadAllSkiSlopes} } = useStore();
-  const { resorts, setSelectedResort, getAllResorts } = skiResortStore;
-  const {loadHotelsForResort} = hotelStore;
+  const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants, setSelectedRestaurant}, skiSlopeStore:{loadAllSkiSlopes} } = useStore();
+  const { resorts, setSelectedResort, getAllResorts, setIsSkyResortEditing, selectedResort } = skiResortStore;
+  const {loadHotelsForResort, setSelectedHotel} = hotelStore;
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [activeHotel, setActiveHotel] = useState(false);
@@ -36,7 +37,23 @@ function SkiResortList() {
     setActiveHotel(activeHotel === true ? false : activeHotel)
   };
 
+  const [formOpen, setFormOpen] = useState(false);
+
+  const handleClose = () => {
+      setFormOpen(false);
+      setIsSkyResortEditing(false);
+    };
+  
+    const handleEditClick = (resort: SkiResort) => {
+        setSelectedResort(resort);
+        setSelectedHotel(undefined);
+        setSelectedRestaurant(undefined);
+        setFormOpen(true);
+        setIsSkyResortEditing(true);
+    };
+
   return (
+    <>
     <Accordion styled>
       {getAllResorts.map((resort, index) => (
         <div key={resort.ime}>
@@ -82,9 +99,33 @@ function SkiResortList() {
               </Accordion.Content>
             </Accordion>
           </Accordion.Content>
+          <Button
+            size="small"
+            onClick={() => handleEditClick(resort)}
+            content="Izmeni"
+          />
         </div>
       ))}
     </Accordion>
+    <Modal
+        open={formOpen}
+        onClose={handleClose}
+        size="large"
+        dimmer="blurring"
+      >
+        <Modal.Content>
+          {selectedResort && (
+            <SkiResortForm
+              initialSkiResort={selectedResort}
+              onFormSubmit={(updatedResort) => {
+              skiResortStore.updateSkiResort(updatedResort.id!, updatedResort);
+              setFormOpen(false)}
+          }
+            />
+          )}
+        </Modal.Content>
+      </Modal>
+    </>
   );
 }
 

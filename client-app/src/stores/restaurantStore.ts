@@ -5,6 +5,7 @@ import agent from "../api/agent";
 export default class RestaurantStore {
     restaurantRegistry = new Map<string,Restaurant>();
     selectedRestaurant : Restaurant | undefined = undefined;
+    restaurantEditStarted : boolean = false;
 
     constructor(){
         makeAutoObservable(this);
@@ -18,6 +19,25 @@ export default class RestaurantStore {
         }
     }
 
+    setRestaurantEditStarted = (value : boolean) => this.restaurantEditStarted = value;
+
+    updateRestaurant = async (id:string, restaurant:Restaurant) =>{
+    try{
+      await agent.restaurant.update(id,restaurant);
+      this.restaurantRegistry.set(id, restaurant);
+      if (this.selectedRestaurant?.id === id) {
+        this.selectedRestaurant = restaurant;
+      }
+    } catch (error)
+    {
+      console.log(error);
+    }
+    this.setRestaurantEditStarted(false);
+  }
+  setSelectedRestaurantLatLng = (lat: number, lng: number) =>{
+    this.selectedRestaurant!.lat = lat;
+    this.selectedRestaurant!.lng = lng;
+  }
     setRestaurant = (restaurant: Restaurant) =>{
         this.restaurantRegistry.set(restaurant.id!,restaurant);
     }

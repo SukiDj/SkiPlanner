@@ -8,6 +8,7 @@ export default class SkiResortStore {
     resorts =  new Map<string,SkiResort>();
     selectedResort : SkiResort | undefined = undefined;
     isLoading : boolean = false;
+    isSkyResortEditing : boolean = false;
 
     constructor(){
         makeAutoObservable(this)
@@ -16,6 +17,8 @@ export default class SkiResortStore {
       this.isLoading = value;
     }
 
+    setIsSkyResortEditing = (value : boolean) => this.isSkyResortEditing = value;
+
     get getSkiResortOptions(){
       return Array.from(this.getAllResorts.values()).map((skiResort : SkiResort) =>({
         key : skiResort.id,
@@ -23,6 +26,25 @@ export default class SkiResortStore {
         value : skiResort.id
       }))
     }
+
+    setSelectedSkiResortLatLng = (lat: number, lng: number) =>{
+    this.selectedResort!.lat = lat;
+    this.selectedResort!.lng = lng;
+  }
+
+  updateSkiResort = async (id:string, resort: SkiResort) =>{
+    try{
+      await agent.skiResort.update(id,resort);
+      this.resorts.set(id, resort);
+      if (this.selectedResort?.id === id) {
+        this.selectedResort = resort;
+      }
+    } catch (error)
+    {
+      console.log(error);
+    }
+    this.setIsSkyResortEditing(false);
+  }
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort

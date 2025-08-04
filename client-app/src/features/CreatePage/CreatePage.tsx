@@ -5,13 +5,19 @@ import RestaurantForm from './Forms/RestaurantForm';
 import SkiResortForm from './Forms/SkiResortForm';
 import SkiSlopeForm from './Forms/SkiSlopeForm';
 import { useStore } from '../../stores/store';
+import { Hotel } from '../../modules/Hotel';
+import { v4 as uuid } from 'uuid';
+import { SkiSlope } from '../../modules/SkiSlope';
+import { Restaurant } from '../../modules/Restaurant';
+import { SkiResort } from '../../modules/SkiResort';
 
 export default function CreatePage() {
     const [activeForm, setActiveForm] = useState<string | null>(null);
-    const {hotelStore,restaurantStore, skiResortStore} = useStore();
-    const {selectedHotel, setSelectedHotel} = hotelStore;
-    const {selectedRestaurant,setSelectedRestaurant} = restaurantStore;
-    const {selectedResort, setSelectedResort} = skiResortStore;
+    const {hotelStore,restaurantStore, skiResortStore,skiSlopeStore} = useStore();
+    const {selectedHotel, setSelectedHotel, createHotel} = hotelStore;
+    const {selectedRestaurant,setSelectedRestaurant, createRestaurant} = restaurantStore;
+    const {selectedResort, setSelectedResort, createSkiResort} = skiResortStore;
+    const {create} = skiSlopeStore;
 
     useEffect(()=>{
       if(selectedHotel)
@@ -22,6 +28,38 @@ export default function CreatePage() {
         setSelectedResort(undefined);
     },[selectedHotel,selectedRestaurant,selectedResort])
 
+      const handleHotelSubmit = (hotel: Hotel) => {
+        const hotelWithId = {
+        ...hotel,
+        id: uuid()
+    };
+    createHotel(hotelWithId.skijaliste!, hotelWithId);
+  };
+
+  const handleSlopeSubmit = (slope: SkiSlope) => {
+    const newSlope = {
+      ...slope,
+      id: uuid()
+    };
+    create(newSlope.skijaliste!,newSlope);
+  }
+
+  const handleRestaurantSubmit = (restaurant: Restaurant) => {
+    const newRestaurant = {
+      ...restaurant,
+      id: uuid()
+    };
+    createRestaurant(newRestaurant.skijaliste!,newRestaurant);
+  }
+
+  const handleSkiResortSubmit = (skiResort: SkiResort) =>{
+    const newSkiResort = {
+      ...skiResort,
+      id: uuid()
+    };
+    createSkiResort(newSkiResort);
+  }
+
   return (
     <>
         <ButtonGroup widths='4' basic>
@@ -31,10 +69,10 @@ export default function CreatePage() {
             <Button onClick={() => setActiveForm("skiStaza")}>Ski staza</Button>
         </ButtonGroup>
 
-        {activeForm === "hotel" && <HotelForm />}
-        {activeForm === "restoran" && <RestaurantForm />}
-        {activeForm === "skijaliste" && <SkiResortForm />}
-        {activeForm === "skiStaza" && <SkiSlopeForm />}
+        {activeForm === "hotel" && <HotelForm onFormSubmit={handleHotelSubmit} />}
+        {activeForm === "restoran" && <RestaurantForm onFormSubmit={handleRestaurantSubmit} />}
+        {activeForm === "skijaliste" && <SkiResortForm onFormSubmit={handleSkiResortSubmit}/>}
+        {activeForm === "skiStaza" && <SkiSlopeForm onFormSubmit={handleSlopeSubmit} />}
     </>
     
   )

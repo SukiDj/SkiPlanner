@@ -6,57 +6,54 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { SkiResort } from '../../../modules/SkiResort';
 import { useStore } from '../../../stores/store';
-import {v4 as uuid} from "uuid";
 
+interface Props {
+  initialSkiResort?: SkiResort;
+  onFormSubmit: (skiResort: SkiResort) => void;
+}
 
-export default function SkiResortForm() {
-  const{skiResortStore:{createSkiResort}, mapStore:{setIsCreating}} =useStore();
+export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props) {
+  const { mapStore: { setIsCreating } } = useStore();
 
-  useEffect(()=>{
+  useEffect(() => {
     setIsCreating(true);
-  },[setIsCreating])
+  }, [setIsCreating]);
 
-  
   const validation = Yup.object({
-    ime: Yup.string().required('Unesite ime skijalista'),
+    ime: Yup.string().required('Unesite ime skijališta'),
     popularnost: Yup.number().required('Unesite popularnost').min(1, 'Popularnost mora da bude minimum 1'),
-    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(500, 'Cena ski pasa mora da bude veca od 500din'),
+    cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(500, 'Cena ski pasa mora da bude veća od 500din'),
     brojStaza: Yup.number().required('Unesite broj staza').min(1, 'Broj staza mora da bude minimum 1'),
-    lat: Yup.number().required('Obelezite skijaliste na mapi'),
-    lng: Yup.number().required('Obelezite skijaliste na mapi'),
+    lat: Yup.number().required('Obeležite skijalište na mapi'),
+    lng: Yup.number().required('Obeležite skijalište na mapi'),
   });
 
-  const handleFormSubmit = (values: SkiResort) => {
-    const formattedValues: SkiResort = {
-      ...values,
-      id: uuid()
-    };
-    console.log('Submitted values:', formattedValues);
-    createSkiResort(formattedValues);
+  const initialValues: SkiResort = initialSkiResort ?? {
+    id: '',
+    ime: '',
+    popularnost: 0,
+    cenaSkiPasa: 0,
+    brojStaza: 0,
+    lat: 0,
+    lng: 0,
   };
 
   return (
     <Formik
-      initialValues={{
-        ime: '',
-        popularnost: 0,
-        cenaSkiPasa: 0,
-        brojStaza: 0,
-        lat: 0,
-        lng: 0,
-      }}
+      initialValues={initialValues}
       validationSchema={validation}
-      onSubmit={values => handleFormSubmit(values)}
+      onSubmit={(values) => onFormSubmit(values)}
+      enableReinitialize
     >
       {({ handleSubmit, setFieldValue, isValid, dirty, values }) => (
         <Form className="ui form" onSubmit={handleSubmit}>
           <Segment>
             <Grid columns={2}>
               <GridColumn>
-              <TextInput name="ime" placeholder="Ime" />
-              <TextInput name="popularnost" placeholder="Popularnost" type="number" />
-              <TextInput name="cenaSkiPasa" placeholder="Cena ski pasa" type="number" />
-              <TextInput name="brojStaza" placeholder="Broj staza" type="number" />
+                <TextInput name="ime" placeholder="Ime" />
+                <TextInput name="popularnost" placeholder="Popularnost" type="number" />
+                <TextInput name="cenaSkiPasa" placeholder="Cena ski pasa" type="number" />
+                <TextInput name="brojStaza" placeholder="Broj staza" type="number" />
               </GridColumn>
               <Divider vertical></Divider>
 
@@ -68,17 +65,13 @@ export default function SkiResortForm() {
                   }}
                 />
                 <Button
-              disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
-              positive
-              type="submit"
-              content="Create"
-            />
+                  disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
+                  positive
+                  type="submit"
+                  content={initialSkiResort ? "Update" : "Create"}
+                />
               </Grid.Column>
-
             </Grid>
-           
-
-            
           </Segment>
         </Form>
       )}
