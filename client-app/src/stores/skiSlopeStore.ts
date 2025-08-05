@@ -12,10 +12,26 @@ export default class SkiSlopeStore {
     numberOfBlueSSlopes : number = 0;
     numberOfGreenSSlopes : number = 0;
     numberOfBlackSSlopes : number = 0;
-    color : string[] = [ "plava", "crvena", "zelena", "crna"]
+    color : string[] = [ "plava", "crvena", "zelena", "crna"];
+    selectedSlope: SkiSlope | undefined = undefined;
+    editMode : boolean = false;
 
     constructor(){
         makeAutoObservable(this);
+    }
+
+
+    setSelectedSlope = (slope: SkiSlope | undefined) => {
+    this.selectedSlope = slope;
+    }
+
+
+    openForm = () => {
+        this.editMode = true;
+    }
+
+    closeForm = () => {
+        this.editMode = false;
     }
 
     create = async (id:string, skiSlope: SkiSlope) =>{
@@ -26,6 +42,88 @@ export default class SkiSlopeStore {
             console.log(error);
         }
     }
+
+    update = async (id: string, skiSlope: SkiSlope) => {
+  try {
+    await agent.skiSlope.update(id, skiSlope);
+
+    let foundKey: string | undefined;
+    let foundRegistry: Map<string, SkiSlope> | undefined;
+
+    const registries = [
+      { map: this.redSkiSlopeRegistry, color: "crvena" },
+      { map: this.blueSkiSlopeRegistry, color: "plava" },
+      { map: this.greenSkiSlopeRegistry, color: "zelena" },
+      { map: this.blackSkiSlopeRegistry, color: "crna" }
+    ];
+
+    for (const reg of registries) {
+      if (reg.map.has(id)) {
+        foundKey = id;
+        foundRegistry = reg.map;
+        break;
+      }
+    }
+
+    if (foundRegistry && foundKey) {
+      const oldSlope = foundRegistry.get(foundKey)!;
+
+      if (oldSlope.tezina !== skiSlope.tezina) {
+        foundRegistry.delete(foundKey);
+
+        const newRegistry = registries.find(r => r.color === skiSlope.tezina)?.map;
+        if (newRegistry) {
+          newRegistry.set(id, skiSlope);
+        }
+      } else {
+        foundRegistry.set(id, skiSlope);
+      }
+    } else {
+      const newRegistry = registries.find(r => r.color === skiSlope.tezina)?.map;
+      if (newRegistry) {
+        newRegistry.set(id, skiSlope);
+      }
+    }
+
+    runInAction(() => {
+      this.numberOfRedSSlopes = this.redSkiSlopeRegistry.size;
+      this.numberOfBlueSSlopes = this.blueSkiSlopeRegistry.size;
+      this.numberOfGreenSSlopes = this.greenSkiSlopeRegistry.size;
+      this.numberOfBlackSSlopes = this.blackSkiSlopeRegistry.size;
+    });
+
+    this.setSelectedSlope(undefined);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+    deleteSkiSlope = async (skiSlope: SkiSlope) =>{
+    try{
+      await agent.skiSlope.delete(skiSlope.id);
+      switch(skiSlope.tezina){
+        case "crvena":
+            this.redSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfRedSSlopes -= 1;
+            break;
+        case "plava":
+            this.blueSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfBlueSSlopes -= 1;
+            break;
+        case "zelena":
+            this.greenSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfGreenSSlopes -= 1;
+            break;
+        case "crna":
+            this.blackSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfBlackSSlopes -= 1;
+            break;
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
 
     get getSkiSlopeColor(){
         return  this.color.map((value) => ({

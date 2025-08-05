@@ -6,21 +6,53 @@ export default class HotelStore {
 
   hotelRegistry = new Map<string,Hotel>();
   selectedHotel : Hotel | undefined = undefined;
+  editStarted : boolean = false;
 
 
   constructor() {
     makeAutoObservable(this);
   }
 
-
+  setEditStarted = (value : boolean) => this.editStarted = value; 
 
   createHotel = async (id:string, hotel:Hotel) =>{
     try{
       await agent.hotel.create(id,hotel);
+      
 
     } catch (error)
     {
       console.log(error);
+    }
+  }
+
+  setSelectedHotelLatLng = (lat: number, lng: number) =>{
+    this.selectedHotel!.lat = lat;
+    this.selectedHotel!.lng = lng;
+  }
+
+  updateHotel = async (id:string, hotel:Hotel) =>{
+    try{
+      await agent.hotel.update(id,hotel);
+      this.hotelRegistry.set(id, hotel);
+      if (this.selectedHotel?.id === id) {
+        this.selectedHotel = hotel;
+      }
+    } catch (error)
+    {
+      console.log(error);
+    }
+    this.setEditStarted(false);
+  }
+
+  deleteHotel = async (id:string) =>{
+    try{
+      await agent.hotel.delete(id);
+      this.hotelRegistry.delete(id);
+      if(this.selectedHotel?.id === id)
+        this.setSelectedHotel(undefined);
+    }catch(err){
+      console.log(err)
     }
   }
 

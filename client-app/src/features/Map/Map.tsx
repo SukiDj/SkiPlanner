@@ -12,9 +12,9 @@ interface MapComponentProps {
 }
 
 function MapComponent({ onLocationSelect }: MapComponentProps) {
-  const { hotelStore, skiResortStore, mapStore:{ isCreating}, restaurantStore:{selectedRestaurant} } = useStore();
-  const { selectedHotel } = hotelStore;
-  const { selectedResort } = skiResortStore;
+  const { hotelStore, skiResortStore, mapStore:{ isCreating}, restaurantStore:{selectedRestaurant,restaurantEditStarted} } = useStore();
+  const { selectedHotel, editStarted } = hotelStore;
+  const { selectedResort, isSkyResortEditing } = skiResortStore;
 
   const centerLat = selectedResort ? selectedResort.lat : 44.284056;
   const centerLng = selectedResort ? selectedResort.lng : 20.810384;
@@ -32,20 +32,25 @@ function MapComponent({ onLocationSelect }: MapComponentProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {selectedResort && <MapUpdater lat={centerLat} lng={centerLng} />}
-        {(selectedHotel|| selectedRestaurant) && (
+        {isSkyResortEditing && <Marker position={[ selectedResort?.lat ?? 0, selectedResort?.lng ?? 0]} /> }
+        {((selectedHotel|| selectedRestaurant) && !isSkyResortEditing) && (
           
           <>
           <MapUpdater lat={selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0} lng={selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0} />
-          <Marker position={[ selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0, selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0]} />
-            
+
+          {!isSkyResortEditing && <Marker position={[ selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0, selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0]} />
+}
           <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1000 }}>
-            {selectedHotel ? <CardWithHotelInfo/> : selectedResort && <CardWithRestaurantInfo/>}
+            {!editStarted && ( selectedHotel  ? <CardWithHotelInfo/> : selectedResort && !restaurantEditStarted && <CardWithRestaurantInfo/>)}
           </div>
             
           </>
         )}
         {isCreating && 
         <FeatureGroup>
+          { isSkyResortEditing? <Marker position={[ selectedResort?.lat ?? 0, selectedResort?.lng ?? 0]} /> :
+          <Marker position={[ selectedHotel?.lat ?? selectedRestaurant?.lat ?? 0, selectedHotel?.lng ?? selectedRestaurant?.lng ?? 0]} />
+          }
         <MapEditControl onLocationSelect={onLocationSelect} />
       </FeatureGroup>
         }

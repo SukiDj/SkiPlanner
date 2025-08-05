@@ -27,23 +27,33 @@ const requests = {
 
 const hotel = {
     listHotelsForResort : (id : string)=> requests.get<Hotel[]>(`Hotel/Skijaliste/${id}/Hoteli`),
-    create : (id:string,hotel:Hotel) => requests.post<void>(`Hotel/KreirajHotelNaSkijalistu/${id}`, hotel)
+    create : (id:string,hotel:Hotel) => requests.post<void>(`Hotel/KreirajHotelNaSkijalistu/${id}`, hotel),
+    update : (id: string, hotel:Hotel) => requests.put<void>(`Hotel/${id}`,hotel),
+    delete : (id:string) => requests.del<void>(`Hotel/${id}`)
 }
 
 const skiResort = {
     list : () => requests.get<SkiResort[]>('Skijaliste/VratiSvaSkijalista'),
-    create : (skiResort:SkiResort) => requests.post<void>('Skijaliste', skiResort)
+    create : (skiResort:SkiResort) => requests.post<void>('Skijaliste', skiResort),
+    update : (id: string, skiResort: SkiResort) => requests.put<void>(`Skijaliste/${id}`, skiResort),
+    delete : (id:string) => requests.del<void>(`Skijaliste/${id}`)
 }
 
 const restaurant = {
     list : (id:string) => requests.get<Restaurant[]>(`Restoran/Skijaliste/${id}/Restorani`),
-    create : (id:string, restaurant:Restaurant) => requests.post<void>(`Restoran/KreirajRestoranNaSkijalistu/${id}`, restaurant)
+    create : (id:string, restaurant:Restaurant) => requests.post<void>(`Restoran/KreirajRestoranNaSkijalistu/${id}`, restaurant),
+    update : (id:string, restaurant: Restaurant) => requests.put<void>(`Restoran/${id}`,restaurant),
+    delete : (id:string) => requests.del<void>(`Restoran/${id}`)
 }
+
 
 const skiSlope = {
     list : (id:string, color : string) => requests.get<SkiSlope[]>(`Staza/VratiStazePoTezini/${id}/${color}`),
-    create : (id:string, skiSlope : SkiSlope) => requests.post<void>(`Staza/KreirajNaSkijalistu/${id}`,skiSlope)
+    create : (id:string, skiSlope : SkiSlope) => requests.post<void>(`Staza/KreirajNaSkijalistu/${id}`,skiSlope),
+    update : (id:string, skiSlope: SkiSlope) => requests.put<void>(`Staza/Izmeni/${id}`,skiSlope),
+    delete : (id:string) => requests.del<void>(`Staza/Obrisi/${id}`)
 }
+
 
 const agent = {
     hotel,
