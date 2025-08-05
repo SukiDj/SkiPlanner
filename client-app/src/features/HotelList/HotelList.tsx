@@ -8,7 +8,7 @@ import HotelForm from "../CreatePage/Forms/HotelForm";
 
 function HotelList() {
     const {hotelStore, restaurantStore} = useStore();
-    const {getHotels, setSelectedHotel, selectedHotel, setEditStarted} = hotelStore
+    const {getHotels, setSelectedHotel, selectedHotel, setEditStarted, deleteHotel} = hotelStore
     const {setSelectedRestaurant} = restaurantStore;
     const handleClick = (hotel: Hotel) => {
       setSelectedRestaurant(undefined);
@@ -38,6 +38,12 @@ function HotelList() {
           <Button onClick={() => handleEditClick(hotel)}>
             Izmeni Hotel
           </Button>
+          <Button
+            size="small"
+            color="red"
+            content="Obrisi"
+            onClick={() => deleteHotel(hotel.id!)}
+            />
         </List.Item>
       ))}
       <Modal

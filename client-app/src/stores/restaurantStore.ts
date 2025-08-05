@@ -34,6 +34,18 @@ export default class RestaurantStore {
     }
     this.setRestaurantEditStarted(false);
   }
+
+  deleteRestaurant = async (id:string) =>{
+    try{
+      await agent.restaurant.delete(id);
+      this.restaurantRegistry.delete(id);
+      if(this.selectedRestaurant?.id === id)
+        this.setSelectedRestaurant(undefined);
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   setSelectedRestaurantLatLng = (lat: number, lng: number) =>{
     this.selectedRestaurant!.lat = lat;
     this.selectedRestaurant!.lng = lng;

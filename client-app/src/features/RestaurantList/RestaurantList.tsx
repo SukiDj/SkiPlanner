@@ -7,7 +7,7 @@ import RestaurantForm from '../CreatePage/Forms/RestaurantForm';
 
 function RestaurantList() {
   const { restaurantStore, hotelStore } = useStore();
-  const { getRestaurants, selectedRestaurant, setSelectedRestaurant, setRestaurantEditStarted } = restaurantStore;
+  const { getRestaurants, selectedRestaurant, setSelectedRestaurant, setRestaurantEditStarted, deleteRestaurant } = restaurantStore;
   const { setSelectedHotel } = hotelStore;
 
 const handleClick = (restaurant: Restaurant) => {
@@ -42,6 +42,12 @@ const handleClick = (restaurant: Restaurant) => {
                 onClick={() => handleEditClick(restaurant)}
                 content="Izmeni"
               />
+              <Button
+            size="small"
+            color="red"
+            content="Obrisi"
+            onClick={() => deleteRestaurant(restaurant.id!)}
+            />
           </List.Item>
         ))}
       </List>

@@ -99,6 +99,32 @@ export default class SkiSlopeStore {
   }
 };
 
+    deleteSkiSlope = async (skiSlope: SkiSlope) =>{
+    try{
+      await agent.skiSlope.delete(skiSlope.id);
+      switch(skiSlope.tezina){
+        case "crvena":
+            this.redSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfRedSSlopes -= 1;
+            break;
+        case "plava":
+            this.blueSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfBlueSSlopes -= 1;
+            break;
+        case "zelena":
+            this.greenSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfGreenSSlopes -= 1;
+            break;
+        case "crna":
+            this.blackSkiSlopeRegistry.delete(skiSlope.id);
+            this.numberOfBlackSSlopes -= 1;
+            break;
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
     get getSkiSlopeColor(){
         return  this.color.map((value) => ({
                 key: value, // unique key for React

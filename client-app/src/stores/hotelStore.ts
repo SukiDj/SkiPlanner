@@ -45,6 +45,16 @@ export default class HotelStore {
     this.setEditStarted(false);
   }
 
+  deleteHotel = async (id:string) =>{
+    try{
+      await agent.hotel.delete(id);
+      this.hotelRegistry.delete(id);
+      if(this.selectedHotel?.id === id)
+        this.setSelectedHotel(undefined);
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   setSelectedHotel = (hotel:Hotel | undefined) => {
     this.selectedHotel = hotel

@@ -65,7 +65,7 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
                   }}
                 />
                 <Button
-                  disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
+                  disabled={!isValid  || values.lat === 0 || values.lng === 0}
                   positive
                   type="submit"
                   content={initialSkiResort ? "Update" : "Create"}

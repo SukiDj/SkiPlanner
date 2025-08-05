@@ -9,7 +9,7 @@ import SkiResortForm from "../CreatePage/Forms/SkiResortForm";
 
 function SkiResortList() {
   const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants, setSelectedRestaurant}, skiSlopeStore:{loadAllSkiSlopes} } = useStore();
-  const { resorts, setSelectedResort, getAllResorts, setIsSkyResortEditing, selectedResort } = skiResortStore;
+  const { resorts, setSelectedResort, getAllResorts, setIsSkyResortEditing, selectedResort, deleteSkiResort } = skiResortStore;
   const {loadHotelsForResort, setSelectedHotel} = hotelStore;
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -104,6 +104,12 @@ function SkiResortList() {
             onClick={() => handleEditClick(resort)}
             content="Izmeni"
           />
+          <Button
+            size="small"
+            color="red"
+            content="Obrisi"
+            onClick={() => deleteSkiResort(resort.id!)}
+            />
         </div>
       ))}
     </Accordion>

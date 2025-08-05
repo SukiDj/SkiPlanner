@@ -12,7 +12,7 @@ interface SkiSlopeCardInfoProps {
 
 function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
   const { skiSlopeStore } = useStore();
-  const { setSelectedSlope, openForm, update, closeForm } = skiSlopeStore;
+  const { setSelectedSlope, openForm, update, closeForm, deleteSkiSlope } = skiSlopeStore;
 
   const handleSlopeSubmit = (slope: SkiSlope) => {
   
@@ -38,6 +38,12 @@ function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
         >
           Izmeni
         </Button>
+        <Button
+          size="small"
+          color="red"
+          content="Obrisi"
+          onClick={() => deleteSkiSlope(skiSlope)}
+          />
         </CardContent>
     </Card>
     {skiSlopeStore.editMode && (

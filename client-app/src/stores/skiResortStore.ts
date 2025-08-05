@@ -46,6 +46,17 @@ export default class SkiResortStore {
     this.setIsSkyResortEditing(false);
   }
 
+  deleteSkiResort = async (id:string) =>{
+    try{
+      await agent.skiResort.delete(id);
+      this.resorts.delete(id);
+      if(this.selectedResort?.id === id)
+        this.setSelectedResort(undefined);
+    }catch(err){
+      console.log(err)
+    }
+  }
+
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort
     }
