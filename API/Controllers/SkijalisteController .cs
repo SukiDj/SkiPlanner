@@ -158,8 +158,8 @@ namespace API.Controllers
             var skijalistaQuery = _client.Cypher
                 .Match("(sk:Skijaliste)");
 
-            if (!string.IsNullOrEmpty(zahtev.NazivSkijalista))
-                skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.Ime == zahtev.NazivSkijalista);
+            if (zahtev.IDSkijalista == Guid.Empty)
+                skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.ID == zahtev.IDSkijalista);
 
 
             if (zahtev.MinBrojStaza.HasValue)
