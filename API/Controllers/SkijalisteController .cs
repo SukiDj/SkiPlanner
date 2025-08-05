@@ -52,14 +52,13 @@ namespace API.Controllers
             }
 
             await _client.Cypher
-                .Create("(s:Skijaliste {ID: $ID, Ime: $Ime, Popularnost: $Popularnost, CenaSkiPasa: $CenaSkiPasa, BrojStaza: $BrojStaza, Lat: $Lat, Lng: $Lng})")
+                .Create("(s:Skijaliste {ID: $ID, Ime: $Ime, Popularnost: $Popularnost, CenaSkiPasa: $CenaSkiPasa, BrojStaza: 0, Lat: $Lat, Lng: $Lng})")
                 .WithParams(new
                 {
                     skijaliste.ID,
                     skijaliste.Ime,
                     skijaliste.Popularnost,
                     skijaliste.CenaSkiPasa,
-                    skijaliste.BrojStaza,
                     skijaliste.Lat,
                     skijaliste.Lng
                 })
@@ -71,7 +70,7 @@ namespace API.Controllers
                 .Where("s1.ID = $id AND s2.ID <> $id")
                 .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
                 .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
-                .AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
+                //.AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
                 .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
                 .WithParam("id", skijaliste.ID)
                 .ExecuteWithoutResultsAsync();
@@ -103,7 +102,6 @@ namespace API.Controllers
                     Ime = !string.IsNullOrEmpty(azuriranoSkijaliste.Ime) ? azuriranoSkijaliste.Ime : skijaliste.Ime,
                     Popularnost = azuriranoSkijaliste.Popularnost != default ? azuriranoSkijaliste.Popularnost : skijaliste.Popularnost,
                     CenaSkiPasa = azuriranoSkijaliste.CenaSkiPasa != default ? azuriranoSkijaliste.CenaSkiPasa : skijaliste.CenaSkiPasa,
-                    BrojStaza = azuriranoSkijaliste.BrojStaza != default ? azuriranoSkijaliste.BrojStaza : skijaliste.BrojStaza,
                     Lat = azuriranoSkijaliste.Lat != default ? azuriranoSkijaliste.Lat : skijaliste.Lat,
                     Lng = azuriranoSkijaliste.Lng != default ? azuriranoSkijaliste.Lng : skijaliste.Lng
                 })
@@ -123,34 +121,13 @@ namespace API.Controllers
                 .Where("s1.ID = $id AND s2.ID <> $id")
                 .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
                 .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
-                .AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
+                //.AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
                 .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
                 .WithParam("id", id)
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Skijalište sa ID-jem {id} je uspešno ažurirano.");
         }
-
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> ObrisiSkijaliste(Guid id)
-        // {
-        //     var existingSkijaliste = await _client.Cypher
-        //         .Match("(s:Skijaliste)")
-        //         .Where((Skijaliste s) => s.ID == id)
-        //         .Return(s => s.As<Skijaliste>())
-        //         .ResultsAsync;
-
-        //     if (existingSkijaliste.SingleOrDefault() == null)
-        //         return NotFound($"Skijalište sa ID-jem {id} ne postoji.");
-
-        //     await _client.Cypher
-        //         .Match("(s:Skijaliste)")
-        //         .Where((Skijaliste s) => s.ID == id)
-        //         .Delete("s")
-        //         .ExecuteWithoutResultsAsync();
-
-        //     return Ok($"Skijalište sa ID-jem {id} je uspešno obrisano.");
-        // }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiSkijaliste(Guid id)
@@ -269,6 +246,7 @@ namespace API.Controllers
                         {
                             opcije.Add(new OpcionaPonuda
                             {
+                                ID = Guid.NewGuid(),
                                 Skijaliste = skijaliste,
                                 Hotel = hotel,
                                 Restoran = restoran,

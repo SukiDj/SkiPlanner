@@ -23,7 +23,7 @@ namespace API.Controllers
 
             return Ok(staze);
         }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> VratiStazu(Guid id)
         {
@@ -95,6 +95,13 @@ namespace API.Controllers
                 })
                 .ExecuteWithoutResultsAsync();
 
+            // Povećaj broj staza
+            await _client.Cypher
+                .Match("(sk:Skijaliste)")
+                .Where((Skijaliste sk) => sk.ID == idSkijalista)
+                .Set("sk.BrojStaza = sk.BrojStaza + 1")
+                .ExecuteWithoutResultsAsync();
+
             // Pronađi i poveži slične staze
             await _client.Cypher
                 .Match("(s1:Staza)", "(s2:Staza)")
@@ -160,18 +167,31 @@ namespace API.Controllers
         public async Task<IActionResult> ObrisiStazu(Guid id)
         {
             var postoji = await _client.Cypher
-                .Match("(s:Staza)")
+                .Match("(s:Staza)-[:PRIPADA]->(sk:Skijaliste)")
                 .Where((Staza s) => s.ID == id)
-                .Return(s => s.As<Staza>())
+                .Return((s, sk) => new
+                {
+                    Staza = s.As<Staza>(),
+                    Skijaliste = sk.As<Skijaliste>()
+                })
                 .ResultsAsync;
 
-            if (!postoji.Any())
+            var rezultat = postoji.SingleOrDefault();
+            if (rezultat == null)
                 return NotFound($"Staza sa ID-jem {id} ne postoji.");
+
 
             await _client.Cypher
                 .Match("(s:Staza)")
                 .Where((Staza s) => s.ID == id)
                 .DetachDelete("s")
+                .ExecuteWithoutResultsAsync();
+
+            // smanji broj staza
+            await _client.Cypher
+                .Match("(sk:Skijaliste)")
+                .Where((Skijaliste sk) => sk.ID == rezultat.Skijaliste.ID)
+                .Set("sk.BrojStaza = sk.BrojStaza - 1")
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Staza sa ID-jem {id} je uspešno obrisana.");
