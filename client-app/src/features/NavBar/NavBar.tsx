@@ -15,6 +15,7 @@ export default function NavBar() {
         />
         <MenuItem
           name='Isplaniraj odmor'
+          as={NavLink} to='/isplanirajOdmor'
           active={active === 'Isplaniraj odmor'}
           onClick={()=>handleClick('Isplaniraj odmor')}
         />

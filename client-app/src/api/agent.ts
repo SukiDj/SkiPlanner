@@ -3,6 +3,8 @@ import  {Hotel}  from '../modules/Hotel';
 import { SkiResort } from "../modules/SkiResort";
 import { Restaurant } from "../modules/Restaurant";
 import { SkiSlope } from "../modules/SkiSlope";
+import { Vacation } from "../modules/Vacation";
+import { VacationOptions } from "../modules/VacationOptions";
 
 
 
@@ -36,7 +38,8 @@ const skiResort = {
     list : () => requests.get<SkiResort[]>('Skijaliste/VratiSvaSkijalista'),
     create : (skiResort:SkiResort) => requests.post<void>('Skijaliste', skiResort),
     update : (id: string, skiResort: SkiResort) => requests.put<void>(`Skijaliste/${id}`, skiResort),
-    delete : (id:string) => requests.del<void>(`Skijaliste/${id}`)
+    delete : (id:string) => requests.del<void>(`Skijaliste/${id}`),
+    filter : (filters: Vacation) => requests.post<VacationOptions[]>(`Skijaliste/FiltrirajOpcijeZaZimovanje`,filters)
 }
 
 const restaurant = {
