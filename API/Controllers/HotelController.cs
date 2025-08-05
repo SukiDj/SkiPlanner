@@ -48,7 +48,7 @@ namespace API.Controllers
             {
                 hotel.ID = Guid.NewGuid();
             }
-            
+
             await _client.Cypher
                 .Create("(h:Hotel {ID: $ID, Ime: $Ime, Ocena: $Ocena, Udaljenost: $Udaljenost, CenaDvokrevetneSobe: $CenaDvokrevetneSobe, CenaTrokrevetneSobe: $CenaTrokrevetneSobe, CenaCetvorokrevetneSobe: $CenaCetvorokrevetneSobe, CenaPetokrevetneSobe: $CenaPetokrevetneSobe, Lat: $Lat, Lng: $Lng})")
                 .WithParams(new
@@ -179,6 +179,26 @@ namespace API.Controllers
             return Ok($"Hotel sa ID-jem {id} je uspešno ažuriran.");
         }
 
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> ObrisiHotel(Guid id)
+        // {
+        //     var existingHotel = await _client.Cypher
+        //         .Match("(h:Hotel)")
+        //         .Where((Hotel h) => h.ID == id)
+        //         .Return(h => h.As<Hotel>())
+        //         .ResultsAsync;
+
+        //     if (existingHotel.SingleOrDefault() == null)
+        //         return NotFound($"Hotel sa ID-jem {id} ne postoji.");
+
+        //     await _client.Cypher
+        //         .Match("(h:Hotel)")
+        //         .Where((Hotel h) => h.ID == id)
+        //         .Delete("h")
+        //         .ExecuteWithoutResultsAsync();
+
+        //     return Ok($"Hotel sa ID-jem {id} je uspešno obrisan.");
+        // }
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiHotel(Guid id)
         {
@@ -194,11 +214,12 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(h:Hotel)")
                 .Where((Hotel h) => h.ID == id)
-                .Delete("h")
+                .DetachDelete("h")   // <-- OVDE PROMENA
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Hotel sa ID-jem {id} je uspešno obrisan.");
         }
+
 
         [HttpPost("PoveziSaSkijalistem")]
         public async Task<IActionResult> PoveziHotelSaSkijalistem(Guid hotelId, Guid skijalisteId)

@@ -126,10 +126,31 @@ namespace API.Controllers
                 .AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
                 .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
                 .WithParam("id", id)
-                .ExecuteWithoutResultsAsync(); 
+                .ExecuteWithoutResultsAsync();
 
             return Ok($"Skijalište sa ID-jem {id} je uspešno ažurirano.");
         }
+
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> ObrisiSkijaliste(Guid id)
+        // {
+        //     var existingSkijaliste = await _client.Cypher
+        //         .Match("(s:Skijaliste)")
+        //         .Where((Skijaliste s) => s.ID == id)
+        //         .Return(s => s.As<Skijaliste>())
+        //         .ResultsAsync;
+
+        //     if (existingSkijaliste.SingleOrDefault() == null)
+        //         return NotFound($"Skijalište sa ID-jem {id} ne postoji.");
+
+        //     await _client.Cypher
+        //         .Match("(s:Skijaliste)")
+        //         .Where((Skijaliste s) => s.ID == id)
+        //         .Delete("s")
+        //         .ExecuteWithoutResultsAsync();
+
+        //     return Ok($"Skijalište sa ID-jem {id} je uspešno obrisano.");
+        // }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiSkijaliste(Guid id)
@@ -143,14 +164,16 @@ namespace API.Controllers
             if (existingSkijaliste.SingleOrDefault() == null)
                 return NotFound($"Skijalište sa ID-jem {id} ne postoji.");
 
+            // Brisanje skijališta sa svim povezanim hotelima, restoranima i stazama
             await _client.Cypher
-                .Match("(s:Skijaliste)")
+                .Match("(s:Skijaliste)<-[r]-(x)")
                 .Where((Skijaliste s) => s.ID == id)
-                .Delete("s")
+                .DetachDelete("s, x")
                 .ExecuteWithoutResultsAsync();
 
-            return Ok($"Skijalište sa ID-jem {id} je uspešno obrisano.");
+            return Ok($"Skijalište sa ID-jem {id} i svi povezani entiteti su uspešno obrisani.");
         }
+
 
         [HttpPost("FiltrirajOpcijeZaZimovanje")]
         public async Task<IActionResult> FiltrirajOpcijeZaZimovanje([FromBody] ZahtevZaFiltriranje zahtev)
@@ -163,7 +186,7 @@ namespace API.Controllers
 
 
             if (zahtev.MinBrojStaza.HasValue)
-                    skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
+                skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
 
             var skijalista = await skijalistaQuery.Return(sk => sk.As<Skijaliste>()).ResultsAsync;
 
@@ -339,6 +362,6 @@ namespace API.Controllers
         //     return Ok(opcije);
         // }
 
-        
+
     }
 }

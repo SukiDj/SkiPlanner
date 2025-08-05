@@ -153,7 +153,7 @@ namespace API.Controllers
                 .WithParam("id", id)
                 .Delete("s")
                 .ExecuteWithoutResultsAsync();
-                
+
             // Pronađi i poveži slične restorane
             await _client.Cypher
                 .Match("(r1:Restoran)", "(r2:Restoran)")
@@ -168,6 +168,26 @@ namespace API.Controllers
             return Ok($"Restoran sa ID-jem {id} je uspešno ažuriran.");
         }
 
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> ObrisiRestoran(Guid id)
+        // {
+        //     var existingRestoran = await _client.Cypher
+        //         .Match("(r:Restoran)")
+        //         .Where((Restoran r) => r.ID == id)
+        //         .Return(r => r.As<Restoran>())
+        //         .ResultsAsync;
+
+        //     if (existingRestoran.SingleOrDefault() == null)
+        //         return NotFound($"Restoran sa ID-jem {id} ne postoji.");
+
+        //     await _client.Cypher
+        //         .Match("(r:Restoran)")
+        //         .Where((Restoran r) => r.ID == id)
+        //         .Delete("r")
+        //         .ExecuteWithoutResultsAsync();
+
+        //     return Ok($"Restoran sa ID-jem {id} je uspešno obrisan.");
+        // }
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiRestoran(Guid id)
         {
@@ -183,11 +203,12 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(r:Restoran)")
                 .Where((Restoran r) => r.ID == id)
-                .Delete("r")
+                .DetachDelete("r")   // <-- OVDE PROMENA
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Restoran sa ID-jem {id} je uspešno obrisan.");
         }
+
 
         [HttpPost("PoveziSaSkijalistem")]
         public async Task<IActionResult> PoveziRestoranSaSkijalistem(Guid restoranId, Guid skijalisteId)
@@ -250,7 +271,7 @@ namespace API.Controllers
 
             return Ok($"Restoran sa ID-jem {restoranId} je povezan sa skijalištem sa ID-jem {skijalisteId}.");
         }
-        
+
         [HttpDelete("ObrisiVezuSaSkijalistem/{restoranId}/{skijalisteId}")]
         public async Task<IActionResult> ObrisiVezuSaSkijalistem(Guid restoranId, Guid skijalisteId)
         {
