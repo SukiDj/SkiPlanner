@@ -39,16 +39,13 @@ export default function LoginForm() {
                         <TextInput name="email" placeholder="Email" />
                         <TextInput name="password" placeholder="Lozinka" />
                         <Button
-                            className="left floated"
+                            className="right floated"
                             disabled={!isValid || !dirty}
                             positive
                             type="submit"
                             content="Prijavi se"
                         />
-                       <Button className="right floated" onClick={()=>navigate('/register')} type="button" style={{backgroundColor:'#48A6A7', color:'white'}}>
-                            Registrij se
-                            <Icon name="arrow right" />
-                            </Button>
+                       
                     </Form>
                 )}
                 </Formik>

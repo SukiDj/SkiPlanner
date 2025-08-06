@@ -5,15 +5,20 @@ import TextInput from "../../../common/TextInput";
 import { useStore } from "../../../stores/store";
 import * as Yup from 'yup';
 import { Vacation } from "../../../modules/Vacation";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const VacationForm = () =>{
-
-    
-
     const {skiResortStore, skiSlopeStore, vacationStore} = useStore();
     const {getSkiResortOptions} = skiResortStore;
     const {getSkiSlopeColor} = skiSlopeStore;
-    const {filterAllVacations} = vacationStore;
+    const {filterAllVacations, deleteAllVacations} = vacationStore;
+
+    const location = useLocation();
+
+    useEffect(() => {
+        deleteAllVacations();
+    }, [location.pathname]); 
 
     const onFormSubmit = (values: Vacation) =>{
         filterAllVacations(values);
@@ -21,7 +26,7 @@ const VacationForm = () =>{
 
 
       const initialValues : Vacation = {
-        nazivSkijalista : "",
+        idSkijalista : "",
         minBrojStaza : 0,
         tezina: "",
         minDuzinaStaze: 0,
@@ -44,7 +49,7 @@ const VacationForm = () =>{
           <Segment>
             <Grid columns={3}>
               <GridColumn>
-                <SelectInput options={getSkiResortOptions} placeholder="Naziv skijalista" name='nazivSkijalista' />
+                <SelectInput options={getSkiResortOptions} placeholder="Naziv skijalista" name='idSkijalista' />
                 <TextInput name="minBrojStaza" placeholder="Minimalni broj staza" type="number" />
                 <SelectInput options={getSkiSlopeColor} placeholder="Tezina" name='tezina' />
               </GridColumn>

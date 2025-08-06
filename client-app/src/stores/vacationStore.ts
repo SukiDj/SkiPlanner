@@ -14,10 +14,16 @@ export default class VacationStore {
       return Array.from(this.vacationOptions.values());
     }
 
+    deleteAllVacations = () => this.vacationOptions.clear();
+
+
     filterAllVacations = async (filters: Vacation) =>{
         try{
             const vacationOpt : VacationOptions[] =  await agent.skiResort.filter(filters);
             runInAction(()=>{
+            if(this.vacationOptions.size != 0)
+                this.deleteAllVacations();
+            
                 vacationOpt.forEach(vacation=>{
                 this.setSkiResort(vacation);
                 });

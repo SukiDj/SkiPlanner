@@ -1,5 +1,5 @@
 export type Vacation = {
-    nazivSkijalista: string;
+    idSkijalista: string;
     minBrojStaza: number;
     tezina: string;
     minDuzinaStaze: number;

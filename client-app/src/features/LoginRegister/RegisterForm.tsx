@@ -53,10 +53,7 @@ export default function RegisterForm() {
                         content="Registruj se"    
                         style={{backgroundColor:'#48A6A7', color:'white'}}
                     />
-                    <Button className="left floated" onClick={()=>navigate('/login')} type='button' color='green'>
-                    <Icon name="arrow left" />
-                            Prijavi se
-                            </Button>
+                    
                 </Form>
             )}
         </Formik>
