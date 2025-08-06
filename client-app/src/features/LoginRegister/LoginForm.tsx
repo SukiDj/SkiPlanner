@@ -2,7 +2,7 @@ import { Form, Formik } from "formik";
 import { Button, Icon, Segment } from "semantic-ui-react";
 import * as Yup from 'yup';
 import TextInput from "../../common/TextInput";
-import { UserLoginForm } from "../../modules/User";
+import { UserLoginForm } from "../../modules/UserLoginForm";
 import { useNavigate } from "react-router-dom";
 
 

@@ -6,6 +6,7 @@ import RestaurantStore from "./restaurantStore";
 import SkiSlopeStore from "./skiSlopeStore";
 import MapStore from "./mapStore";
 import VacationStore from "./vacationStore";
+import UserStore from "./userStore";
 
 interface Store{
     hotelStore:HotelStore,
@@ -13,7 +14,8 @@ interface Store{
     restaurantStore : RestaurantStore,
     skiSlopeStore : SkiSlopeStore,
     mapStore : MapStore,
-    vacationStore : VacationStore
+    vacationStore : VacationStore,
+    userStore: UserStore
 }
 
 export const store: Store ={
@@ -22,7 +24,8 @@ export const store: Store ={
     restaurantStore : new RestaurantStore(),
     skiSlopeStore : new SkiSlopeStore(),
     mapStore : new MapStore(),
-    vacationStore : new VacationStore()
+    vacationStore : new VacationStore(),
+    userStore : new UserStore()
 }
 
 export const StoreContext = createContext(store);

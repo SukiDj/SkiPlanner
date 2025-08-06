@@ -3,6 +3,7 @@ import { Button, Icon, Segment } from 'semantic-ui-react';
 import * as Yup from 'yup';
 import TextInput from '../../common/TextInput';
 import { useNavigate } from 'react-router-dom';
+import { useStore } from '../../stores/store';
 
 export default function RegisterForm() {
 
@@ -15,10 +16,8 @@ export default function RegisterForm() {
         password : Yup.string().required("Unesite lozinku")
     })
 
-    const handleSubmit = (values:any)=>{
-
-    }
-
+    const {userStore} = useStore();
+    const {registerUser} = userStore;
   return (
     <div style={{
         display: "flex",
@@ -32,19 +31,25 @@ export default function RegisterForm() {
         boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)"}}>
         <Formik
             initialValues={{
+                id: '',
                 ime : '',
                 prezime: '',
                 email: '',
-                password: ''
+                telefon: '',
+                username: '',
+                password: '',
+                uloga: 'Posetilac'
             }}
             validationSchema={validationSchema}
-            onSubmit={(values)=>handleSubmit(values)}
+            onSubmit={(values)=>registerUser(values)}
         >
             {({handleSubmit,isValid, dirty})=>(
                 <Form className='ui form' onSubmit={handleSubmit}>
                     <TextInput name="ime" placeholder='Ime'/>
                     <TextInput name="prezime" placeholder='Prezime'/>
+                    <TextInput name="telefon" placeholder='Telefon'/>
                     <TextInput name="email" placeholder='Email'/>
+                    <TextInput name="username" placeholder='Korisnicko ime'/>
                     <TextInput name="password" placeholder='Lozinka'/>
                     <Button 
                         className='right floated'

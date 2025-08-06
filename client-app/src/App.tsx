@@ -10,12 +10,14 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Container } from 'semantic-ui-react'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   
   
   return (
     <>
+    <ToastContainer position="top-right" autoClose={3000} />
     <NavBar/>
       <Outlet/>
     </>

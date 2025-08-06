@@ -5,6 +5,8 @@ import { Restaurant } from "../modules/Restaurant";
 import { SkiSlope } from "../modules/SkiSlope";
 import { Vacation } from "../modules/Vacation";
 import { VacationOptions } from "../modules/VacationOptions";
+import { User } from "../modules/User";
+import { UserLoginForm } from "../modules/UserLoginForm";
 
 
 
@@ -57,12 +59,17 @@ const skiSlope = {
     delete : (id:string) => requests.del<void>(`Staza/Obrisi/${id}`)
 }
 
+const user = {
+    register : (user: User) => requests.post<void>("Korisnik/RegistrujKorisnika",user),
+}
+
 
 const agent = {
     hotel,
     skiResort,
     restaurant,
-    skiSlope
+    skiSlope,
+    user
 }
 
 export default agent
