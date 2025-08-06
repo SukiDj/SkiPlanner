@@ -5,8 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-
-
 namespace API.Services
 {
     public class TokenService
@@ -18,17 +16,17 @@ namespace API.Services
             _config = config;//zbog onog super secret key da ga zamenim u config fajl kasnije
             _client = client;//ovo ako mi treba za role
         }
-        public async Task<string> CreateToken(Korisnik korisnik)
+        public async Task<string> CreateToken(Korisnik korisnik, string Uloga)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, korisnik.Username),
                 new Claim(ClaimTypes.NameIdentifier, korisnik.ID.ToString()),
                 new Claim(ClaimTypes.Email, korisnik.Email),
-
+                new Claim(ClaimTypes.Role, Uloga)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Super secret key"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor

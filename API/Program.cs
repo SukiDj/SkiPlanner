@@ -3,6 +3,7 @@ using System.Text;
 using Application.Services;
 using Neo4jClient;
 using StackExchange.Redis;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Conn
 builder.Services.AddSingleton<RedisService>();
 builder.Services.AddSingleton<WebSocketService>();
 builder.Services.AddSingleton<SubscriptionService>();
+builder.Services.AddScoped<TokenService>();
+
 
 
 var app = builder.Build();

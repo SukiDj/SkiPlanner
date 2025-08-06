@@ -1,0 +1,6 @@
+[Authorize(Roles = "RadnikNaSkijalistu")]
+[HttpGet("SkijalistaPodaci")]
+public IActionResult GetSkijalistaInfo()
+{
+    // only RadnikNaSkijalistu can access
+}

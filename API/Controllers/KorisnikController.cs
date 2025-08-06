@@ -1,62 +1,91 @@
+using API.DTOs;
 using Application.Filters;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Neo4jClient;
+using Neo4jClient.Cypher;
+using API.Services;
 
 namespace API.Controllers
 {
     public class KorisnikController : BaseApiController
     {
         private readonly IGraphClient _client;
-
-        public KorisnikController(IGraphClient client)
+        private readonly TokenService _tokenService;
+        public KorisnikController(IGraphClient client, TokenService tokenService)
         {
             _client = client;
+            _tokenService = tokenService;
+        }
+
+        [HttpGet("Korisnici")]
+        public async Task<IActionResult> VratiSveKorisnike()
+        {
+            var korisnici = await _client.Cypher
+                .Match("(k:Korisnik)-[:IMA_ULOGU]->(r)")
+                .Return((k, r) => new
+                {
+                    Korisnik = k.As<Korisnik>(),
+                    Uloga = Return.As<string>("labels(r)[0]")
+                })
+                .ResultsAsync;
+
+            var korisniciDto = korisnici.Select(x => new KorisnikDto
+            {
+                ID = x.Korisnik.ID,
+                Ime = x.Korisnik.Ime,
+                Prezime = x.Korisnik.Prezime,
+                Email = x.Korisnik.Email,
+                Telefon = x.Korisnik.Telefon,
+                Username = x.Korisnik.Username,
+                Uloga = x.Uloga
+            });
+
+            return Ok(korisniciDto);
         }
 
         [HttpPost("RegistrujKorisnika")]
-        public async Task<IActionResult> RegistrujKorisnika(Korisnik korisnik)
+        public async Task<IActionResult> RegistrujKorisnika([FromBody] RegistracijaDto dto)
         {
-            var postojeciKorisnici = await _client.Cypher.Match("(k:Korisnik)").Where((Korisnik k) => k.Username == korisnik.Username).Return(k => k.As<Korisnik>()).ResultsAsync;
+            var postojeciKorisnici = await _client.Cypher
+                .Match("(k:Korisnik)")
+                .Where((Korisnik k) => k.Username == dto.Username || k.Email == dto.Email || k.Telefon == dto.Telefon)
+                .Return(k => k.As<Korisnik>())
+                .ResultsAsync;
+
             var postojeciKorisnik = postojeciKorisnici.SingleOrDefault();
 
             if (postojeciKorisnik != null)
             {
-                if (postojeciKorisnik.Username == korisnik.Username)
-                {
-                    return BadRequest("Korisnik sa unetim korisnickim imenom vec postoji.");
-                }
-                else if (postojeciKorisnik.Email == korisnik.Email)
-                {
-                    return BadRequest("Korisnik sa unetim emailom vec postoji.");
-                }
-                else if (postojeciKorisnik.Telefon == korisnik.Telefon)
-                {
-                    return BadRequest("Korisnik sa unetim brojem telefona vec postoji.");
-                }
+                return BadRequest("Korisnik sa unetim podacima vec postoji.");
             }
 
-            if (korisnik.ID == Guid.Empty)
-            {
-                korisnik.ID = Guid.NewGuid();
-            }
-            korisnik.Password = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
+            var id = Guid.NewGuid();
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             await _client.Cypher
-                .Create("(k:Korisnik {ID: $ID, Ime: $Ime, Prezime: $Prezime, Telefon: $Telefon, Email: $Email, Username: $Username, Password: $Password})")
+                .Merge($"(uloga:{dto.Uloga})")
+                .Merge("(k:Korisnik {ID: $ID})")
+                .OnCreate()
+                .Set("k = $korisnikData")
+                .Merge("(k)-[:IMA_ULOGU]->(uloga)")
                 .WithParams(new
                 {
-                    korisnik.ID,
-                    korisnik.Ime,
-                    korisnik.Prezime,
-                    korisnik.Telefon,
-                    korisnik.Email,
-                    korisnik.Username,
-                    korisnik.Password
+                    ID = id,
+                    korisnikData = new
+                    {
+                        ID = id,
+                        Ime = dto.Ime,
+                        Prezime = dto.Prezime,
+                        Telefon = dto.Telefon,
+                        Email = dto.Email,
+                        Username = dto.Username,
+                        Password = hashedPassword
+                    }
                 })
                 .ExecuteWithoutResultsAsync();
 
-            return Ok(korisnik);
+            return Ok(new { Message = "Korisnik uspesno registrovan." });
         }
 
         [HttpPost("Login")]
@@ -67,15 +96,46 @@ namespace API.Controllers
                 return BadRequest(new { Message = "Email i lozinka su obavezni" });
             }
 
-            var korisnici = await _client.Cypher.Match("(k:Korisnik)").Where((Korisnik k) => k.Email == loginPodaci.Email).Return(k => k.As<Korisnik>()).ResultsAsync;
+            var korisnici = await _client.Cypher
+                .Match("(k:Korisnik)")
+                .Where((Korisnik k) => k.Email == loginPodaci.Email)
+                .Return(k => k.As<Korisnik>())
+                .ResultsAsync;
+
             var korisnik = korisnici.SingleOrDefault();
+
             if (korisnik == null || !BCrypt.Net.BCrypt.Verify(loginPodaci.Password, korisnik.Password))
             {
                 return Unauthorized(new { Message = "Neispravan email ili lozinka" });
             }
 
-            return Ok(new { Message = "Uspesna prijava", korisnik });
+            var role = await _client.Cypher
+                .Match("(k:Korisnik)-[:IMA_ULOGU]->(r)")
+                .Where((Korisnik k) => k.ID == korisnik.ID)
+                .Return(r => Return.As<string>("labels(r)[0]"))  //rola kao string
+                .ResultsAsync;
+
+            var korisnikUloga = role.SingleOrDefault() ?? "NepoznataUloga";
+
+            var token = await _tokenService.CreateToken(korisnik, korisnikUloga);
+
+            return Ok(new
+            {
+                Message = "Uspešna prijava",
+                Token = token,
+                Korisnik = new
+                {
+                    korisnik.ID,
+                    korisnik.Ime,
+                    korisnik.Prezime,
+                    korisnik.Email,
+                    korisnik.Telefon,
+                    korisnik.Username,
+                    Uloga = korisnikUloga
+                }
+            });
         }
+
 
         [HttpPost("Poseti")]
         public async Task<IActionResult> Poseti([FromBody] PosetaZahtev zahtev)
