@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image } from 'semantic-ui-react'
+import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image, Icon } from 'semantic-ui-react'
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
 import { useStore } from '../../stores/store'
@@ -67,15 +67,9 @@ export default function NavBar() {
     ) : (
         <Menu.Item position='right'>
         <Dropdown 
-            item
             trigger={
                 <span>
-                    <Image 
-                    size='small'
-                        avatar 
-                        spaced="right" 
-                        src='client-app\src\assets\user.jpg' 
-                    />
+                    <Icon  name='user circle' size='large' />
                     {curentUser.username}
                 </span>
             }
