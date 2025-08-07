@@ -5,7 +5,7 @@ import { Restaurant } from "../modules/Restaurant";
 import { SkiSlope } from "../modules/SkiSlope";
 import { Vacation } from "../modules/Vacation";
 import { VacationOptions } from "../modules/VacationOptions";
-import { User } from "../modules/User";
+import { AuthUser, User } from "../modules/User";
 import { UserLoginForm } from "../modules/UserLoginForm";
 
 
@@ -61,6 +61,7 @@ const skiSlope = {
 
 const user = {
     register : (user: User) => requests.post<void>("Korisnik/RegistrujKorisnika",user),
+    login : (params: UserLoginForm) => requests.post<AuthUser>("Korisnik/Login",params)
 }
 
 

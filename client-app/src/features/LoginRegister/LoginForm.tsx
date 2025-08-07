@@ -4,20 +4,23 @@ import * as Yup from 'yup';
 import TextInput from "../../common/TextInput";
 import { UserLoginForm } from "../../modules/UserLoginForm";
 import { useNavigate } from "react-router-dom";
+import { useStore } from "../../stores/store";
 
 
 export default function LoginForm() {
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const {userStore} = useStore();
+    const {loginUser, curentUser} = userStore;
 
     const validationScheme = Yup.object({
         email : Yup.string().required("Unesite email"),
         password : Yup.string().required("Unesite lozinku")
     })
     const handleSubmit=(values:UserLoginForm)=>{
-
+        loginUser(values);
     }
-
+    console.log(curentUser)
   return (
     <div style={{
         display: "flex",

@@ -5,6 +5,7 @@ import CreatePage from "../features/CreatePage/CreatePage";
 import LoginForm from "../features/LoginRegister/LoginForm";
 import RegisterForm from "../features/LoginRegister/RegisterForm";
 import PlanVacation from "../features/PlanVacation/PlanVacation";
+import RequireRole from "../features/RequireRole/RequireRole";
 
 export const routes: RouteObject[] = [
     {
@@ -12,10 +13,15 @@ export const routes: RouteObject[] = [
         element: <App/>,
         children:[
             {path:'', element:<HomePage/>},
-            {path:'kreiraj', element:<CreatePage/>},
             {path: 'login', element:<LoginForm />},
             {path: 'register', element:<RegisterForm />},
-            {path: 'isplanirajOdmor', element:<PlanVacation />}
+            {path: 'isplanirajOdmor', element:<PlanVacation />},
+            {
+                element: <RequireRole allowedRoles={["RadnikNaSkijalistu"]} />,
+                children:[
+                    {path:'kreiraj', element:<CreatePage/>},
+                ]
+            }
         ]
     }
     

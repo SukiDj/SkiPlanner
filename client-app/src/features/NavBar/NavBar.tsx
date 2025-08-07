@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { MenuItem, Menu, Button, Modal, Tab } from 'semantic-ui-react'
+import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image } from 'semantic-ui-react'
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
+import { useStore } from '../../stores/store'
 
 export default function NavBar() {
     const [active, setActive] = useState<string>("Pocetna stranica")
@@ -11,6 +12,8 @@ export default function NavBar() {
     const handleClick = (name: string) => setActive(name)
     const handleAuthClick = () => setModalOpen(true)
     const closeModal = () => setModalOpen(false)
+    const {userStore} = useStore();
+    const {curentUser} = userStore;
 
     const panes = [
         {
@@ -46,6 +49,7 @@ export default function NavBar() {
                     active={active === 'Isplaniraj odmor'}
                     onClick={() => handleClick('Isplaniraj odmor')}
                 />
+                {curentUser?.uloga === "RadnikNaSkijalistu" &&
                 <MenuItem
                     as={NavLink} to='/kreiraj'
                     name='Kreiraj'
@@ -53,13 +57,39 @@ export default function NavBar() {
                     onClick={() => handleClick('Kreiraj')}
                 />
 
-                <Menu.Menu position='right'>
-                    <MenuItem>
-                        <Button primary onClick={handleAuthClick}>
-                            Prijava / Registracija
-                        </Button>
-                    </MenuItem>
-                </Menu.Menu>
+                }
+                {!curentUser ? (
+        <Menu.Item position='right'>
+            <Button primary onClick={handleAuthClick}>
+                Prijava / Registracija
+            </Button>
+        </Menu.Item>
+    ) : (
+        <Menu.Item position='right'>
+        <Dropdown 
+            item
+            trigger={
+                <span>
+                    <Image 
+                    size='small'
+                        avatar 
+                        spaced="right" 
+                        src='client-app\src\assets\user.jpg' 
+                    />
+                    {curentUser.username}
+                </span>
+            }
+        >
+            <Dropdown.Menu>
+                <Dropdown.Item 
+                    text='Odjavi se' 
+                    onClick={userStore.logout} 
+                />
+            </Dropdown.Menu>
+        </Dropdown>
+        </Menu.Item>
+    )}
+                
             </Menu>
 
             <Modal open={modalOpen} onClose={closeModal} size='small'>
