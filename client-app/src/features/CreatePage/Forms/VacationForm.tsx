@@ -38,11 +38,26 @@ const VacationForm = () =>{
         maxBudzet: 0
       }
 
+     const validationScheme = Yup.object({
+  idSkijalista: Yup.string().required("Izaberite skijaliste"),
+  tezina: Yup.string().required("Unesite zeljenu tezinu staze"),
+  brojDana: Yup.number()
+    .moreThan(0, "Unesite broj dana veći od nule")
+    .required("Unesite broj dana"),
+  brojOsoba: Yup.number()
+    .moreThan(0, "Unesite broj osoba veći od nule")
+    .required("Unesite broj osoba"),
+  maxBudzet: Yup.number()
+    .moreThan(0, "Unesite budzet veći od nule")
+    .required("Unesite budzet"),
+});
+
     return(
     <Formik
       initialValues={initialValues}
       onSubmit={(values) => onFormSubmit(values)}
       enableReinitialize
+      validationSchema={validationScheme}
     >
       {({ handleSubmit, setFieldValue, isValid, dirty, values }) => (
         <Form className="ui form" onSubmit={handleSubmit}>
@@ -72,6 +87,7 @@ const VacationForm = () =>{
                   positive
                   type="submit"
                   content="Isplaniraj"
+                  disabled={!isValid || !dirty}
                 />
                 </Grid>
           </Segment>
