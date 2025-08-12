@@ -5,8 +5,9 @@ import { Restaurant } from "../modules/Restaurant";
 import { SkiSlope } from "../modules/SkiSlope";
 import { Vacation } from "../modules/Vacation";
 import { VacationOptions } from "../modules/VacationOptions";
-import { AuthUser, User } from "../modules/User";
+import { AuthUser, User, VisitOption } from "../modules/User";
 import { UserLoginForm } from "../modules/UserLoginForm";
+import { Recommendation } from "../modules/Recommendations";
 
 
 
@@ -61,7 +62,9 @@ const skiSlope = {
 
 const user = {
     register : (user: User) => requests.post<void>("Korisnik/RegistrujKorisnika",user),
-    login : (params: UserLoginForm) => requests.post<AuthUser>("Korisnik/Login",params)
+    login : (params: UserLoginForm) => requests.post<AuthUser>("Korisnik/Login",params),
+    visitOption : (visit : VisitOption) => requests.post<void>("Korisnik/Poseti", visit),
+    listRecommendations : (id : string) => requests.get<Recommendation[]>(`Korisnik/${id}/Preporuke`)
 }
 
 

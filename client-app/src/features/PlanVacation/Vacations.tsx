@@ -6,11 +6,12 @@ import { observer } from "mobx-react-lite";
 import Map from "../Map/Map";
 
 const Vacations = () => {
-  const { vacationStore, skiResortStore,hotelStore,restaurantStore } = useStore();
+  const { vacationStore, skiResortStore,hotelStore,restaurantStore,userStore } = useStore();
   const { getVacationOptions } = vacationStore;
   const {setSelectedResort,setSelectedSkiResortLatLng} = skiResortStore;
   const {setSelectedHotel} = hotelStore;
   const {setSelectedRestaurant} = restaurantStore;
+  const {visitOption} = userStore;
 
 
   const [selectedOption, setSelectedOption] = useState<VacationOptions | null>(null);
@@ -20,6 +21,7 @@ const Vacations = () => {
     setSelectedOption(option);
     setSelectedResort(option.skijaliste);
     setModalOpen(true);
+    visitOption(option);
   };
 
   const closeModal = () => {

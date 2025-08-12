@@ -6,6 +6,7 @@ import LoginForm from "../features/LoginRegister/LoginForm";
 import RegisterForm from "../features/LoginRegister/RegisterForm";
 import PlanVacation from "../features/PlanVacation/PlanVacation";
 import RequireRole from "../features/RequireRole/RequireRole";
+import Recommendations from "../features/Recommendations/Recommendations";
 
 export const routes: RouteObject[] = [
     {
@@ -15,6 +16,7 @@ export const routes: RouteObject[] = [
             {path:'', element:<HomePage/>},
             {path: 'login', element:<LoginForm />},
             {path: 'register', element:<RegisterForm />},
+            {path: 'preporuke', element:<Recommendations />},
             {path: 'isplanirajOdmor', element:<PlanVacation />},
             {
                 element: <RequireRole allowedRoles={["RadnikNaSkijalistu"]} />,

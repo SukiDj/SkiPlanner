@@ -25,3 +25,10 @@ export type TokenJebeni = {
 export type AuthUser = {
   token:string
 }
+
+export type VisitOption = {
+  korisnikID: string | undefined;
+  skijalisteID: string | undefined;
+  hotelID: string | undefined;
+  restoranID: string | undefined;
+}

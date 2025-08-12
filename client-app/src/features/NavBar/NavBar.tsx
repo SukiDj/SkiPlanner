@@ -49,6 +49,12 @@ export default function NavBar() {
                     active={active === 'Isplaniraj odmor'}
                     onClick={() => handleClick('Isplaniraj odmor')}
                 />
+                <MenuItem
+                    as={NavLink} to='/preporuke'
+                    name='Preporuke'
+                    active={active === 'Preporuke'}
+                    onClick={() => handleClick('Preporuke')}
+                />
                 {curentUser?.uloga === "RadnikNaSkijalistu" &&
                 <MenuItem
                     as={NavLink} to='/kreiraj'
