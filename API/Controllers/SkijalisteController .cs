@@ -158,11 +158,11 @@ namespace API.Controllers
             var skijalistaQuery = _client.Cypher
                 .Match("(sk:Skijaliste)");
 
-            if (zahtev.IDSkijalista == Guid.Empty)
+            if (zahtev.IDSkijalista != Guid.Empty)
                 skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.ID == zahtev.IDSkijalista);
 
 
-            if (zahtev.MinBrojStaza.HasValue)
+            if (zahtev.MinBrojStaza > 0)
                 skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
 
             var skijalista = await skijalistaQuery.Return(sk => sk.As<Skijaliste>()).ResultsAsync;
@@ -179,15 +179,15 @@ namespace API.Controllers
                 if (!string.IsNullOrEmpty(zahtev.Tezina))
                     stazeQuery = stazeQuery.AndWhere((Staza s) => s.Tezina == zahtev.Tezina);
 
-                if (zahtev.MinDuzinaStaze.HasValue)
+                if (zahtev.MinDuzinaStaze > 0)
                     stazeQuery = stazeQuery.AndWhere((Staza s) => s.Duzina >= zahtev.MinDuzinaStaze);
 
-                if (zahtev.MaxDuzinaStaze.HasValue)
+                if (zahtev.MaxDuzinaStaze > 0)
                     stazeQuery = stazeQuery.AndWhere((Staza s) => s.Duzina <= zahtev.MaxDuzinaStaze);
 
                 var staze = await stazeQuery.Return(s => s.As<Staza>()).ResultsAsync;
 
-                if (zahtev.Tezina != null || zahtev.MinDuzinaStaze.HasValue || zahtev.MaxDuzinaStaze.HasValue)
+                if (zahtev.Tezina != null || zahtev.MinDuzinaStaze > 0 || zahtev.MaxDuzinaStaze > 0)
                 {
                     if (!staze.Any()) continue;
                 }
@@ -197,15 +197,15 @@ namespace API.Controllers
                     .Match("(h:Hotel)-[:NALAZI_SE_U]->(sk:Skijaliste)")
                     .Where((Skijaliste sk) => sk.ID == skijaliste.ID);
 
-                if (zahtev.MinOcenaHotela.HasValue)
+                if (zahtev.MinOcenaHotela > 0)
                     hoteliQuery = hoteliQuery.AndWhere((Hotel h) => h.Ocena >= zahtev.MinOcenaHotela);
 
-                if (zahtev.MaxUdaljenostHotela.HasValue)
+                if (zahtev.MaxUdaljenostHotela > 0)
                     hoteliQuery = hoteliQuery.AndWhere((Hotel h) => h.Udaljenost <= zahtev.MaxUdaljenostHotela);
 
                 var hoteli = await hoteliQuery.Return(h => h.As<Hotel>()).ResultsAsync;
 
-                if (zahtev.MinOcenaHotela.HasValue || zahtev.MaxUdaljenostHotela.HasValue)
+                if (zahtev.MinOcenaHotela > 0 || zahtev.MaxUdaljenostHotela > 0)
                 {
                     if (!hoteli.Any()) continue;
                 }
