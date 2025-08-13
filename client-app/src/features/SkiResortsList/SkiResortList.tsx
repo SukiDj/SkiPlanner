@@ -8,9 +8,10 @@ import { SkiResort } from "../../modules/SkiResort";
 import SkiResortForm from "../CreatePage/Forms/SkiResortForm";
 
 function SkiResortList() {
-  const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants, setSelectedRestaurant}, skiSlopeStore:{loadAllSkiSlopes} } = useStore();
+  const { skiResortStore, hotelStore, restaurantStore:{loadRestaurants, setSelectedRestaurant}, skiSlopeStore:{loadAllSkiSlopes},userStore } = useStore();
   const { resorts, setSelectedResort, getAllResorts, setIsSkyResortEditing, selectedResort, deleteSkiResort } = skiResortStore;
   const {loadHotelsForResort, setSelectedHotel} = hotelStore;
+  const {isEmploye} = userStore;
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [activeHotel, setActiveHotel] = useState(false);
@@ -99,6 +100,7 @@ function SkiResortList() {
               </Accordion.Content>
             </Accordion>
           </Accordion.Content>
+          {isEmploye && <>
           <Button
             size="small"
             onClick={() => handleEditClick(resort)}
@@ -110,6 +112,8 @@ function SkiResortList() {
             content="Obrisi"
             onClick={() => deleteSkiResort(resort.id!)}
             />
+          </>}
+          
         </div>
       ))}
     </Accordion>

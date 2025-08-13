@@ -6,9 +6,10 @@ import { Restaurant } from '../../modules/Restaurant';
 import RestaurantForm from '../CreatePage/Forms/RestaurantForm';
 
 function RestaurantList() {
-  const { restaurantStore, hotelStore } = useStore();
+  const { restaurantStore, hotelStore,userStore } = useStore();
   const { getRestaurants, selectedRestaurant, setSelectedRestaurant, setRestaurantEditStarted, deleteRestaurant } = restaurantStore;
   const { setSelectedHotel } = hotelStore;
+  const {isEmploye} = userStore;
 
 const handleClick = (restaurant: Restaurant) => {
       setSelectedRestaurant(restaurant);
@@ -37,7 +38,9 @@ const handleClick = (restaurant: Restaurant) => {
               <List.Header as="a">{restaurant.naziv}</List.Header>
               <List.Description>{restaurant.tipKuhinje}</List.Description>
             </List.Content>
-              <Button
+            {isEmploye &&
+            <>
+            <Button
                 size="small"
                 onClick={() => handleEditClick(restaurant)}
                 content="Izmeni"
@@ -48,6 +51,8 @@ const handleClick = (restaurant: Restaurant) => {
             content="Obrisi"
             onClick={() => deleteRestaurant(restaurant.id!)}
             />
+            </>}
+              
           </List.Item>
         ))}
       </List>

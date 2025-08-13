@@ -15,6 +15,14 @@ export default class UserStore {
         makeAutoObservable(this);
     }
 
+    get isVisitor(){
+        return this.curentUser?.uloga === "Posetilac";
+    }
+
+    get isEmploye(){
+        return this.curentUser?.uloga === "RadnikNaSkijalistu";
+    }
+
     registerUser = async (data: User) =>{
         try{
             await agent.user.register(data)

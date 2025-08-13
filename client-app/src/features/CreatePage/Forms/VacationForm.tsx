@@ -39,8 +39,6 @@ const VacationForm = () =>{
       }
 
      const validationScheme = Yup.object({
-  idSkijalista: Yup.string().required("Izaberite skijaliste"),
-  tezina: Yup.string().required("Unesite zeljenu tezinu staze"),
   brojDana: Yup.number()
     .moreThan(0, "Unesite broj dana veći od nule")
     .required("Unesite broj dana"),

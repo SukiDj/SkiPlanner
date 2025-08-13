@@ -7,9 +7,10 @@ import { useState } from "react";
 import HotelForm from "../CreatePage/Forms/HotelForm";
 
 function HotelList() {
-    const {hotelStore, restaurantStore} = useStore();
+    const {hotelStore, restaurantStore, userStore} = useStore();
     const {getHotels, setSelectedHotel, selectedHotel, setEditStarted, deleteHotel} = hotelStore
     const {setSelectedRestaurant} = restaurantStore;
+    const {isEmploye} = userStore;
     const handleClick = (hotel: Hotel) => {
       setSelectedRestaurant(undefined);
       setSelectedHotel(hotel);
@@ -35,6 +36,8 @@ function HotelList() {
             <List.Header as="a">{hotel.ime}</List.Header>
             <List.Description>{hotel.udaljenost}</List.Description>
           </List.Content>
+          {isEmploye &&
+          <>
           <Button onClick={() => handleEditClick(hotel)}>
             Izmeni Hotel
           </Button>
@@ -44,6 +47,9 @@ function HotelList() {
             content="Obrisi"
             onClick={() => deleteHotel(hotel.id!)}
             />
+          </>
+          }
+          
         </List.Item>
       ))}
       <Modal

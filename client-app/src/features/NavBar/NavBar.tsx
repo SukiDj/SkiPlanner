@@ -50,11 +50,19 @@ export default function NavBar() {
                     onClick={() => handleClick('Isplaniraj odmor')}
                 />
                 <MenuItem
+                as={NavLink} to='/info'
+                    name='Info'
+                    active={active === 'Info'}
+                    onClick={() => handleClick('Info')}
+                />
+                {curentUser?.uloga === "{psetilac}" &&
+                <MenuItem
                     as={NavLink} to='/preporuke'
                     name='Preporuke'
                     active={active === 'Preporuke'}
                     onClick={() => handleClick('Preporuke')}
                 />
+                }
                 {curentUser?.uloga === "RadnikNaSkijalistu" &&
                 <MenuItem
                     as={NavLink} to='/kreiraj'
@@ -62,7 +70,6 @@ export default function NavBar() {
                     active={active === 'Kreiraj'}
                     onClick={() => handleClick('Kreiraj')}
                 />
-
                 }
                 {!curentUser ? (
         <Menu.Item position='right'>
