@@ -4,8 +4,9 @@ import * as Yup from 'yup';
 import TextInput from '../../common/TextInput';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../stores/store';
+import { observer } from 'mobx-react-lite';
 
-export default function RegisterForm() {
+const RegisterForm = () => {
 
     const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ export default function RegisterForm() {
     })
 
     const {userStore} = useStore();
-    const {registerUser} = userStore;
+    const {registerUser, loadingRegLog} = userStore;
   return (
     <div style={{
         display: "flex",
@@ -57,6 +58,7 @@ export default function RegisterForm() {
                         type="submit"
                         content="Registruj se"    
                         style={{backgroundColor:'#48A6A7', color:'white'}}
+                        loading={loadingRegLog}
                     />
                     
                 </Form>
@@ -69,3 +71,4 @@ export default function RegisterForm() {
     
   )
 }
+export default observer(RegisterForm)

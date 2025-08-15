@@ -14,7 +14,7 @@ interface Props {
 
 export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props) {
   const { mapStore: { setIsCreating } } = useStore();
-
+  const {skiResortStore:{loading}} = useStore();
   useEffect(() => {
     setIsCreating(true);
   }, [setIsCreating]);
@@ -68,7 +68,8 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
                   disabled={!isValid  || values.lat === 0 || values.lng === 0}
                   positive
                   type="submit"
-                  content={initialSkiResort ? "Update" : "Create"}
+                  content={initialSkiResort ? "Izmeni" : "Kreiraj"}
+                  loading={loading}
                 />
               </Grid.Column>
             </Grid>

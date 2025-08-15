@@ -129,7 +129,7 @@ function SkiResortList() {
               initialSkiResort={selectedResort}
               onFormSubmit={(updatedResort) => {
               skiResortStore.updateSkiResort(updatedResort.id!, updatedResort);
-              setFormOpen(false)}
+              }
           }
             />
           )}

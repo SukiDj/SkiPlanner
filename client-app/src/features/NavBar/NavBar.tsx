@@ -4,8 +4,9 @@ import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image, Icon } from 'seman
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
 import { useStore } from '../../stores/store'
+import { observer } from 'mobx-react-lite'
 
-export default function NavBar() {
+const NavBar = () => {
     const [active, setActive] = useState<string>("Pocetna stranica")
     const [modalOpen, setModalOpen] = useState(false)
 
@@ -33,7 +34,7 @@ export default function NavBar() {
             )
         }
     ]
-
+console.log(curentUser?.uloga)
     return (
         <>
             <Menu tabular>
@@ -108,3 +109,4 @@ export default function NavBar() {
         </>
     )
 }
+export default observer(NavBar);

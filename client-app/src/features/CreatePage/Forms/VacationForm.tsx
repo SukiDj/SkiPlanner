@@ -7,12 +7,13 @@ import * as Yup from 'yup';
 import { Vacation } from "../../../modules/Vacation";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { observer } from "mobx-react-lite";
 
 const VacationForm = () =>{
     const {skiResortStore, skiSlopeStore, vacationStore} = useStore();
     const {getSkiResortOptions} = skiResortStore;
     const {getSkiSlopeColor} = skiSlopeStore;
-    const {filterAllVacations, deleteAllVacations} = vacationStore;
+    const {filterAllVacations, deleteAllVacations, loadingVacations} = vacationStore;
 
     const location = useLocation();
 
@@ -37,7 +38,7 @@ const VacationForm = () =>{
         brojOsoba: 0,
         maxBudzet: 0
       }
-
+console.log(loadingVacations)
      const validationScheme = Yup.object({
   brojDana: Yup.number()
     .moreThan(0, "Unesite broj dana veći od nule")
@@ -86,6 +87,7 @@ const VacationForm = () =>{
                   type="submit"
                   content="Isplaniraj"
                   disabled={!isValid || !dirty}
+                  loading={loadingVacations}
                 />
                 </Grid>
           </Segment>
@@ -95,4 +97,4 @@ const VacationForm = () =>{
     );
 }
 
-export default VacationForm;
+export default observer(VacationForm);

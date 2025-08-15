@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import agent from "../api/agent";
-import { AuthUser, LogedUser, TokenJebeni, User, VisitOption } from "../modules/User";
+import { AuthUser, LogedUser, Token, User, VisitOption } from "../modules/User";
 import { UserLoginForm } from "../modules/UserLoginForm";
 import { jwtDecode } from "jwt-decode";
 import { makeAutoObservable, runInAction } from "mobx";
@@ -10,6 +10,7 @@ import { Recommendation } from "../modules/Recommendations";
 export default class UserStore {
     curentUser : LogedUser | undefined= undefined; 
     recommendations = new Map<string,Recommendation>();
+    loadingRegLog: boolean = false;
 
     constructor(){
         makeAutoObservable(this);
@@ -23,7 +24,11 @@ export default class UserStore {
         return this.curentUser?.uloga === "RadnikNaSkijalistu";
     }
 
+    setLoadingRegLog = (val : boolean) => this.loadingRegLog = val;
+
+
     registerUser = async (data: User) =>{
+        this.setLoadingRegLog(true);
         try{
             await agent.user.register(data)
             toast.success("Uspešno ste se registrovali!")
@@ -31,24 +36,30 @@ export default class UserStore {
         catch(error){
             toast.error("Greška prilikom registracije!")
         }
+        this.setLoadingRegLog(false);
     }
 
     loginUser = async (params: UserLoginForm) =>{
+        this.setLoadingRegLog(true);
         try{
             const answer: AuthUser =  await agent.user.login(params);
             if(answer)
             {
-                const decoded = jwtDecode<TokenJebeni>(answer.token);
+
+                const decoded = jwtDecode<Token>(answer.token);
+                console.log(decoded)
                 this.curentUser = {
                     id: decoded.nameid,
                     email: decoded.email,
-                    uloga: decoded.uloga,
+                    uloga: decoded.role,
                     username: decoded.unique_name
                 }
+                toast.success("Uspešno ste se prijavili!")
             }
         } catch(error){
             toast.error("Greška prilikom prijave!")
         }
+        this.setLoadingRegLog(false);
     }
 
     logout = () =>{

@@ -15,10 +15,10 @@ export type LogedUser ={
   email: string;
 } 
 
-export type TokenJebeni = {
+export type Token = {
   nameid: string;
   unique_name: string;
-  uloga: string;
+  role: string;
   email: string;
 }
 
