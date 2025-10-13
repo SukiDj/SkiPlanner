@@ -11,8 +11,9 @@ interface SkiSlopeCardInfoProps {
   }
 
 function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
-  const { skiSlopeStore } = useStore();
+  const { skiSlopeStore, userStore } = useStore();
   const { setSelectedSlope, openForm, update, closeForm, deleteSkiSlope } = skiSlopeStore;
+  const {isEmploye} = userStore;
 
   const handleSlopeSubmit = (slope: SkiSlope) => {
   
@@ -30,6 +31,7 @@ function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
         <CardDescription>
             Matthew is a pianist living in Nashville.
         </CardDescription>
+        {isEmploye &&<>
         <Button
           onClick={() => {
             setSelectedSlope(skiSlope);
@@ -44,6 +46,8 @@ function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
           content="Obrisi"
           onClick={() => deleteSkiSlope(skiSlope)}
           />
+        </>}
+        
         </CardContent>
     </Card>
     {skiSlopeStore.editMode && (

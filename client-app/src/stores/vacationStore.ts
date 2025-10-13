@@ -5,6 +5,7 @@ import agent from "../api/agent";
 
 export default class VacationStore {
     vacationOptions =  new Map<string,VacationOptions>();
+    loadingVacations : boolean = false;
 
     constructor(){
         makeAutoObservable(this);
@@ -14,13 +15,18 @@ export default class VacationStore {
       return Array.from(this.vacationOptions.values());
     }
 
+    setLoadingVacations = (val: boolean) => this.loadingVacations = val;
+
     deleteAllVacations = () => this.vacationOptions.clear();
 
 
     filterAllVacations = async (filters: Vacation) =>{
+        this.setLoadingVacations(true);
         try{
+            
             const vacationOpt : VacationOptions[] =  await agent.skiResort.filter(filters);
             runInAction(()=>{
+                
             if(this.vacationOptions.size != 0)
                 this.deleteAllVacations();
             
@@ -32,6 +38,7 @@ export default class VacationStore {
         catch(error){
             console.log(error);
         }
+        this.setLoadingVacations(false);
     }
 
     setSkiResort = (option:VacationOptions)=>{

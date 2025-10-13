@@ -5,13 +5,14 @@ import TextInput from "../../common/TextInput";
 import { UserLoginForm } from "../../modules/UserLoginForm";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../stores/store";
+import { observer } from "mobx-react-lite";
 
 
-export default function LoginForm() {
+const LoginForm = () => {
 
     const navigate = useNavigate();
     const {userStore} = useStore();
-    const {loginUser, curentUser} = userStore;
+    const {loginUser, curentUser, loadingRegLog} = userStore;
 
     const validationScheme = Yup.object({
         email : Yup.string().required("Unesite email"),
@@ -47,6 +48,7 @@ export default function LoginForm() {
                             positive
                             type="submit"
                             content="Prijavi se"
+                            loading={loadingRegLog}
                         />
                        
                     </Form>
@@ -59,3 +61,4 @@ export default function LoginForm() {
     
   )
 }
+export default observer(LoginForm)

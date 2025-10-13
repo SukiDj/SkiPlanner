@@ -135,6 +135,8 @@ export default class SkiSlopeStore {
 
     loadRedSSlope = async (id:string) =>{
         try{
+            if(this.redSkiSlopeRegistry.size !== 0)
+              this.redSkiSlopeRegistry.clear();
             const red : SkiSlope[] = await agent.skiSlope.list(id,'crvena');
             runInAction(()=>{
                 red.forEach(red=>{

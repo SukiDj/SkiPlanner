@@ -4,8 +4,9 @@ import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image, Icon } from 'seman
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
 import { useStore } from '../../stores/store'
+import { observer } from 'mobx-react-lite'
 
-export default function NavBar() {
+const NavBar = () => {
     const [active, setActive] = useState<string>("Pocetna stranica")
     const [modalOpen, setModalOpen] = useState(false)
 
@@ -33,7 +34,7 @@ export default function NavBar() {
             )
         }
     ]
-
+console.log(curentUser?.uloga)
     return (
         <>
             <Menu tabular>
@@ -50,11 +51,19 @@ export default function NavBar() {
                     onClick={() => handleClick('Isplaniraj odmor')}
                 />
                 <MenuItem
+                as={NavLink} to='/info'
+                    name='Info'
+                    active={active === 'Info'}
+                    onClick={() => handleClick('Info')}
+                />
+                {curentUser?.uloga === "{psetilac}" &&
+                <MenuItem
                     as={NavLink} to='/preporuke'
                     name='Preporuke'
                     active={active === 'Preporuke'}
                     onClick={() => handleClick('Preporuke')}
                 />
+                }
                 {curentUser?.uloga === "RadnikNaSkijalistu" &&
                 <MenuItem
                     as={NavLink} to='/kreiraj'
@@ -62,7 +71,6 @@ export default function NavBar() {
                     active={active === 'Kreiraj'}
                     onClick={() => handleClick('Kreiraj')}
                 />
-
                 }
                 {!curentUser ? (
         <Menu.Item position='right'>
@@ -101,3 +109,4 @@ export default function NavBar() {
         </>
     )
 }
+export default observer(NavBar);
