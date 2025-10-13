@@ -95,16 +95,30 @@ if (app.Environment.IsDevelopment())
 app.UseWebSockets();
 
 
-app.Use(async (context, next) =>
+// app.Use(async (context, next) =>
+// {
+//     if (context.Request.Path == "/ws/notifications")
+//     {
+//         var wsService = context.RequestServices.GetRequiredService<WebSocketService>();
+//         await wsService.HandleWebSocketAsync(context);
+//     }
+//     else
+//     {
+//         await next();
+//     }
+// });
+
+app.Map("/ws", async context =>
 {
-    if (context.Request.Path == "/ws/notifications")
+    if (context.WebSockets.IsWebSocketRequest)
     {
-        var wsService = context.RequestServices.GetRequiredService<WebSocketService>();
-        await wsService.HandleWebSocketAsync(context);
+        var socketService = context.RequestServices.GetRequiredService<WebSocketService>();
+        var socket = await context.WebSockets.AcceptWebSocketAsync();
+        await socketService.HandleConnectionAsync(context, socket);
     }
     else
     {
-        await next();
+        context.Response.StatusCode = 400;
     }
 });
 
