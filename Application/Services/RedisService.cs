@@ -74,6 +74,8 @@ namespace Application.Services
             var subscriber = _redisConnection.GetSubscriber();
             subscriber.Subscribe(channel, (ch, message) => onMessage(message));
         }
+
+        // ovo izbaciti
         public async Task<List<string>> GetAllRankedSkiResorts(string kriterijum)
         {
             // Dohvata sva skijališta sortirana po rangu od najvišeg ka najnižem
