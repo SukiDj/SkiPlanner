@@ -8,7 +8,7 @@ import { useStore } from "../../stores/store";
 import { observer } from "mobx-react-lite";
 
 
-const LoginForm = () => {
+const LoginForm = ({closeModal}:any) => {
 
     const navigate = useNavigate();
     const {userStore} = useStore();
@@ -20,8 +20,10 @@ const LoginForm = () => {
     })
     const handleSubmit=(values:UserLoginForm)=>{
         loginUser(values);
+        console.log("uso")
+        closeModal(false);
     }
-    console.log(curentUser)
+
   return (
     <div style={{
         display: "flex",

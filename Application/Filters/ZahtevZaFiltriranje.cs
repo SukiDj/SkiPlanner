@@ -1,6 +1,7 @@
 namespace Application.Filters
 {
-    public class ZahtevZaFiltriranje
+    public class
+    ZahtevZaFiltriranje
     {
         public Guid IDSkijalista { get; set; }
         public int? MinBrojStaza { get; set; }
