@@ -8,6 +8,7 @@ import { VacationOptions } from "../modules/VacationOptions";
 import { AuthUser, User, VisitOption } from "../modules/User";
 import { UserLoginForm } from "../modules/UserLoginForm";
 import { Recommendation } from "../modules/Recommendations";
+import { RedisSkiResort } from "../modules/RedisSkiResort";
 
 
 
@@ -67,13 +68,21 @@ const user = {
     listRecommendations : (id : string) => requests.get<Recommendation[]>(`Korisnik/${id}/Preporuke`)
 }
 
+const redis = {
+    list : () => requests.get<RedisSkiResort[]>('Redis/skijalista/sve'),
+    create : (skiResort:RedisSkiResort) => requests.post<void>('Redis/skijaliste/dodaj', skiResort),
+    update : (skiResort: RedisSkiResort) => requests.put<void>(`Redis/skijaliste/azuriraj`, skiResort),
+    delete : (id:string) => requests.del<void>(`Redis/obrisiSkijaliste/${id}`)
+}
+
 
 const agent = {
     hotel,
     skiResort,
     restaurant,
     skiSlope,
-    user
+    user,
+    redis
 }
 
 export default agent
