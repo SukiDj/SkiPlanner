@@ -72,7 +72,9 @@ const redis = {
     list : () => requests.get<RedisSkiResort[]>('Redis/skijalista/sve'),
     create : (skiResort:RedisSkiResort) => requests.post<void>('Redis/skijaliste/dodaj', skiResort),
     update : (skiResort: RedisSkiResort) => requests.put<void>(`Redis/skijaliste/azuriraj`, skiResort),
-    delete : (id:string) => requests.del<void>(`Redis/obrisiSkijaliste/${id}`)
+    delete : (id:string) => requests.del<void>(`Redis/obrisiSkijaliste/${id}`),
+    getAllSubbed : (id:string) => requests.get<RedisSkiResort[]>(`Redis/pretplate/${id}`),
+    subscribe : (userId: string, skiResort: string) => requests.post<void>(`Redis/subscribe?userId=${userId}&skiResort=${skiResort}`, {}),
 }
 
 

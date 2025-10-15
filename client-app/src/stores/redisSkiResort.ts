@@ -11,7 +11,8 @@ export default class RedisSkiResortStore {
     selectedResort : SkiResort | undefined = undefined;
     isLoading : boolean = false;
     isSkyResortEditing : boolean = false;
-    loading: boolean = false
+    loading: boolean = false;
+    subscribedResorts =new Map<string,RedisSkiResort>();
 
     constructor(){
         makeAutoObservable(this)
@@ -47,27 +48,42 @@ export default class RedisSkiResortStore {
     setSkiResort = (skiResort:RedisSkiResort)=>{
       this.resorts.set(skiResort.ime!,skiResort);
     }
+    setSubbed = (skiResort:RedisSkiResort)=>{
+      this.subscribedResorts.set(skiResort.ime!,skiResort);
+    }
+
 
     get getAllResorts(){
       return Array.from(this.resorts.values());
     }
 
-    loadAllResorts = async () =>{
-      try{
-        this.setIsLoading(true);
-        const resort : RedisSkiResort[] = await agent.redis.list();
-        runInAction(()=>{
-          resort.forEach(resort=>{
-            this.setSkiResort(resort);
-          });
-        })
-        this.setIsLoading(false);
-
-        
-      }catch(error){
-        console.log(error)
-      }
+    get getAllSubbed(){
+      return Array.from(this.subscribedResorts.values());
     }
+
+    loadAllResorts = async () => {
+  try {
+    this.setIsLoading(true);
+
+    const resorts: RedisSkiResort[] = await agent.redis.list();
+
+    runInAction(() => {
+      
+      const unsubscribed = resorts.filter(
+        (resort) => !this.subscribedResorts.has(resort.ime) 
+      );
+
+      unsubscribed.forEach((resort) => {
+        this.setSkiResort(resort);
+      });
+
+      this.setIsLoading(false);
+    });
+  } catch (error) {
+    console.log(error);
+    runInAction(() => this.setIsLoading(false));
+  }
+};
 
     createSkiResort = async (skiResort: RedisSkiResort) =>{
       this.setLoading(true);
@@ -105,5 +121,32 @@ export default class RedisSkiResortStore {
       console.log(err)
     }
     this.setLoading(false);
+  }
+
+  subscribe = async (id:string,skiRes:string) =>{
+    this.setLoading(true);
+    try{
+      await agent.redis.subscribe(id, skiRes);
+      toast.success("Uspesno zapracivanje skijalista!");
+    }catch(err){
+      console.log(err)
+    }
+    this.setLoading(false);
+  }
+
+  getAllSubbedSkiR = async (id:string) =>{
+    try{
+        this.setIsLoading(true);
+        const resort : RedisSkiResort[] = await agent.redis.getAllSubbed(id);
+        runInAction(()=>{
+          resort.forEach(resort=>{
+            this.setSubbed(resort);
+          });
+        })
+        this.setIsLoading(false);
+        
+      }catch(error){
+        console.log(error)
+      }
   }
 }

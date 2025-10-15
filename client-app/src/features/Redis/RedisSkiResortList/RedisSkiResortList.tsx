@@ -10,8 +10,9 @@ import { s } from "motion/react-client";
 
 const SkiResortList = () => {
 
-    const {redisSkiResort} = useStore();
-    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort} = redisSkiResort;
+    const {redisSkiResort, userStore} = useStore();
+    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort, getAllSubbed, getAllSubbedSkiR, subscribe} = redisSkiResort;
+    const {curentUser} = userStore;
     const [selectedResort, setSelectedResort] = useState<RedisSkiResort | null>(null);
     
   const [editOpen, setEditOpen] = useState<boolean>(false);
@@ -34,15 +35,59 @@ const SkiResortList = () => {
         })
     }
     useEffect(()=>{
-        loadAllResorts();
+        getAllSubbedSkiR(curentUser!.id).then(() =>{
+            loadAllResorts();
+        })
+        
     },[])
 
+    const handleSubscribe = (name:string) =>{
+        subscribe(curentUser!.id,name).then(()=>{
+             getAllSubbedSkiR(curentUser!.id).then(() =>{
+            loadAllResorts();
+        })
+        })
+    }
       
 
   
   
   return (
     <>
+    <Card.Group itemsPerRow={3} stackable style={{ marginTop: "2em" }}>
+      {getAllSubbed.map((resort) => (
+        <Card  color="blue" raised>
+          <Card.Content>
+            <Card.Header>{resort.ime}</Card.Header>
+            <Card.Meta>
+              <Icon name="users" /> {resort.brojSkijasa} skijaša
+            </Card.Meta>
+            <Card.Description>
+              <p>
+                <Icon name="road" color="green" /> Otvorenih staza:{" "}
+                {resort.otvorenihStaza}
+              </p>
+              <p>
+                <Icon name="road" color="red" /> Zatvorenih staza:{" "}
+                {resort.zatvorenihStaza}
+              </p>
+              <p>
+                <Icon name="car" /> Slobodnih parking mesta:{" "}
+                {resort.slobodnihParkingMesta}
+              </p>
+            </Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+              <Button
+                color="red"
+                size="tiny"
+                content="Ukini pretplatu"
+                onClick={() => subscribe(curentUser!.id,resort.ime)}
+              />
+          </Card.Content>
+        </Card>
+      ))}
+    </Card.Group>
     <Card.Group itemsPerRow={3} stackable style={{ marginTop: "2em" }}>
       {getAllResorts.map((resort) => (
         <Card  color="blue" raised>
@@ -80,6 +125,12 @@ const SkiResortList = () => {
                 size="tiny"
                 content="Obriši"
                 onClick={() => onDelete(resort.ime)}
+              />
+              <Button
+                color="red"
+                size="tiny"
+                content="Pretplati se"
+                onClick={() => handleSubscribe(resort.ime)}
               />
           </Card.Content>
         </Card>
