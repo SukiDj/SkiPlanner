@@ -151,10 +151,38 @@ namespace Application.Services
             await Database.SetRemoveAsync($"subscriptions:{userId}", skiResort.ToLowerInvariant());
         }
 
-        public async Task<string[]> GetUserSubscriptionsAsync(string userId)
+        // public async Task<string[]> GetUserSubscriptionsAsync(string userId)
+        // {
+        //     var values = await Database.SetMembersAsync($"subscriptions:{userId}");
+        //     return values.Select(v => v.ToString()).ToArray();
+        // }
+        public async Task<List<SkijalisteRedis>> GetUserSubscriptionsAsync(string userId)
         {
             var values = await Database.SetMembersAsync($"subscriptions:{userId}");
-            return values.Select(v => v.ToString()).ToArray();
+            var result = new List<SkijalisteRedis>();
+
+            foreach (var v in values)
+            {
+                var key = $"skijaliste:{v.ToString().ToLowerInvariant()}";
+                var json = await Database.StringGetAsync(key);
+
+                if (!json.IsNullOrEmpty)
+                {
+                    try
+                    {
+                        var skijaliste = JsonConvert.DeserializeObject<SkijalisteRedis>(json);
+                        if (skijaliste != null)
+                            result.Add(skijaliste);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Greška pri deserijalizaciji skijališta: {v}");
+                    }
+                }
+            }
+
+            return result;
         }
+
     }
 }
