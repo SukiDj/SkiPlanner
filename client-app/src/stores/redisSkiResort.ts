@@ -66,7 +66,7 @@ export default class RedisSkiResortStore {
     this.setIsLoading(true);
 
     const resorts: RedisSkiResort[] = await agent.redis.list();
-
+    this.resorts.clear();
     runInAction(() => {
       
       const unsubscribed = resorts.filter(
@@ -134,9 +134,21 @@ export default class RedisSkiResortStore {
     this.setLoading(false);
   }
 
+  unSubscribe = async (id:string,skiRes:string) =>{
+    this.setLoading(true);
+    try{
+      await agent.redis.unSubscribe(id, skiRes);
+      toast.success("Uspesno odjavljivanje!");
+    }catch(err){
+      console.log(err)
+    }
+    this.setLoading(false);
+  }
+
   getAllSubbedSkiR = async (id:string) =>{
     try{
         this.setIsLoading(true);
+        this.subscribedResorts.clear();
         const resort : RedisSkiResort[] = await agent.redis.getAllSubbed(id);
         runInAction(()=>{
           resort.forEach(resort=>{

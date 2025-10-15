@@ -11,10 +11,13 @@ import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Container } from 'semantic-ui-react'
 import { ToastContainer } from 'react-toastify'
+import { connectWebSocket } from './services/websocketService'
 
 function App() {
   
-  
+  useEffect(() => {
+    connectWebSocket(); // 🔗 Poveži se na WebSocket server
+  }, []);
   return (
     <>
     <ToastContainer position="top-right" autoClose={3000} />

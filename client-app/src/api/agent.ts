@@ -75,6 +75,7 @@ const redis = {
     delete : (id:string) => requests.del<void>(`Redis/obrisiSkijaliste/${id}`),
     getAllSubbed : (id:string) => requests.get<RedisSkiResort[]>(`Redis/pretplate/${id}`),
     subscribe : (userId: string, skiResort: string) => requests.post<void>(`Redis/subscribe?userId=${userId}&skiResort=${skiResort}`, {}),
+    unSubscribe : (userId: string, skiResort: string) => requests.post<void>(`Redis/unsubscribe?userId=${userId}&skiResort=${skiResort}`, {}),
 }
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Icon, Button } from "semantic-ui-react";
+import { Card, Icon, Button, Label } from "semantic-ui-react";
 import { useStore } from "../../../stores/store";
 import { observer } from "mobx-react-lite";
 import SkiResortEditModal from "../SkiResortFormModal/SkiResortEditModal";
@@ -11,7 +11,7 @@ import { s } from "motion/react-client";
 const SkiResortList = () => {
 
     const {redisSkiResort, userStore} = useStore();
-    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort, getAllSubbed, getAllSubbedSkiR, subscribe} = redisSkiResort;
+    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort, getAllSubbed, getAllSubbedSkiR, subscribe,unSubscribe } = redisSkiResort;
     const {curentUser} = userStore;
     const [selectedResort, setSelectedResort] = useState<RedisSkiResort | null>(null);
     
@@ -34,26 +34,29 @@ const SkiResortList = () => {
             loadAllResorts();
         })
     }
+    const loadData = async () => {
+    await getAllSubbedSkiR(curentUser!.id); // sačekaj da se subbed resorti učitaju
+    await loadAllResorts();                 // tek onda učitaj sve
+  };
+
     useEffect(()=>{
-        getAllSubbedSkiR(curentUser!.id).then(() =>{
-            loadAllResorts();
-        })
-        
+        loadData();
     },[])
 
-    const handleSubscribe = (name:string) =>{
-        subscribe(curentUser!.id,name).then(()=>{
-             getAllSubbedSkiR(curentUser!.id).then(() =>{
-            loadAllResorts();
-        })
-        })
+    const handleSubscribe =async (name:string) =>{
+       await subscribe(curentUser!.id,name)
+       await loadData();
     }
       
-
+    const handleUnSubscribe = async (name:string) =>{
+        await unSubscribe(curentUser!.id,name);
+        await loadData();
+    }
   
   
   return (
     <>
+    <h3>Prijavljena skijalista</h3>
     <Card.Group itemsPerRow={3} stackable style={{ marginTop: "2em" }}>
       {getAllSubbed.map((resort) => (
         <Card  color="blue" raised>
@@ -82,13 +85,15 @@ const SkiResortList = () => {
                 color="red"
                 size="tiny"
                 content="Ukini pretplatu"
-                onClick={() => subscribe(curentUser!.id,resort.ime)}
+                onClick={() => handleUnSubscribe(resort.ime)}
               />
           </Card.Content>
         </Card>
       ))}
     </Card.Group>
+    <h3>Neprijavljena skijalista</h3>
     <Card.Group itemsPerRow={3} stackable style={{ marginTop: "2em" }}>
+        
       {getAllResorts.map((resort) => (
         <Card  color="blue" raised>
           <Card.Content>
