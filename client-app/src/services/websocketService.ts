@@ -6,7 +6,7 @@ export const connectWebSocket = () => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
  
-  socket = new WebSocket('ws://localhost:5000/ws'); 
+  socket = new WebSocket('ws://localhost:5001/ws'); 
   socket.onopen = () => {
     console.log(' WebSocket connected');
   };
