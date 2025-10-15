@@ -21,7 +21,7 @@ const NavBar = () => {
             menuItem: 'Prijavi se',
             render: () => (
                 <Tab.Pane>
-                    <LoginForm  />
+                    <LoginForm closeModal={setModalOpen} />
                 </Tab.Pane>
             )
         },
@@ -56,7 +56,7 @@ console.log(curentUser?.uloga)
                     active={active === 'Info'}
                     onClick={() => handleClick('Info')}
                 />
-                {curentUser?.uloga === "{psetilac}" &&
+                {curentUser?.uloga === "Posetilac" &&
                 <MenuItem
                     as={NavLink} to='/preporuke'
                     name='Preporuke'

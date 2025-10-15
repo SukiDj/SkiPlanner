@@ -7,6 +7,7 @@ import SkiSlopeStore from "./skiSlopeStore";
 import MapStore from "./mapStore";
 import VacationStore from "./vacationStore";
 import UserStore from "./userStore";
+import RedisSkiResortStore from "./redisSkiResort";
 
 interface Store{
     hotelStore:HotelStore,
@@ -15,7 +16,8 @@ interface Store{
     skiSlopeStore : SkiSlopeStore,
     mapStore : MapStore,
     vacationStore : VacationStore,
-    userStore: UserStore
+    userStore: UserStore,
+    redisSkiResort: RedisSkiResortStore
 }
 
 export const store: Store ={
@@ -25,7 +27,8 @@ export const store: Store ={
     skiSlopeStore : new SkiSlopeStore(),
     mapStore : new MapStore(),
     vacationStore : new VacationStore(),
-    userStore : new UserStore()
+    userStore : new UserStore(),
+    redisSkiResort: new RedisSkiResortStore()
 }
 
 export const StoreContext = createContext(store);
