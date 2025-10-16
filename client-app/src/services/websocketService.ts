@@ -60,34 +60,32 @@ class WebSocketService {
     this.socket = new WebSocket(`wss://localhost:5001/ws?token=${token}`);
 
     this.socket.onopen = () => {
-      console.log("✅ WebSocket connected");
+      console.log(" WebSocket connected");
       this.isConnecting = false;
     };
 
     this.socket.onmessage = (event) => {
       const message = event.data;
-      console.log("📩 Notifikacija:", message);
+      console.log(" Notifikacija:", message);
 
-      // Toast
       toast.info(message, {
         position: "top-right",
         autoClose: 4000,
         theme: "colored",
       });
 
-      // Obaveštavamo sve registrovane listener-e
       this.listeners.forEach((cb) => cb(message));
     };
 
     this.socket.onclose = () => {
-      console.warn("⚠️ WebSocket disconnected, reconnecting...");
+      console.warn(" WebSocket disconnected, reconnecting...");
       this.socket = null;
       this.isConnecting = false;
       setTimeout(() => this.connectWebSocket(), this.reconnectTimeout);
     };
 
     this.socket.onerror = (err) => {
-      console.error("❌ WebSocket error:", err);
+      console.error(" WebSocket error:", err);
       this.socket?.close();
     };
   }
@@ -100,7 +98,6 @@ class WebSocketService {
   onMessage(callback: MessageCallback) {
     this.listeners.push(callback);
     return () => {
-      // unsubscribe
       this.listeners = this.listeners.filter((cb) => cb !== callback);
     };
   }
