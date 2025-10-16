@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Neo4jClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace API.Services
@@ -44,7 +45,18 @@ namespace API.Services
         }
 
         //refresh token mozda da napravis
-        
+        public RefreshToken GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+        }
+
     }
     
 }

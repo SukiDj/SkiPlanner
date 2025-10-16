@@ -2,6 +2,7 @@ using StackExchange.Redis;
 using Newtonsoft.Json;
 using Domain;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 
 namespace Application.Services
 {
@@ -90,6 +91,8 @@ namespace Application.Services
         private readonly IConnectionMultiplexer _redisConnection;
         private readonly ILogger<RedisService> _logger;
 
+        private readonly ConcurrentDictionary<string, bool> _redisSubscribedResorts = new(StringComparer.OrdinalIgnoreCase);
+
         public RedisService(IConnectionMultiplexer redisConnection, ILogger<RedisService> logger)
         {
             _redisConnection = redisConnection;
@@ -133,13 +136,43 @@ namespace Application.Services
         // Pub/Sub
         public async Task PublishNotificationAsync(string skiResort, string message)
         {
-            await Subscriber.PublishAsync($"notifications:{skiResort.ToLowerInvariant()}", message);
+            await Subscriber.PublishAsync(skiResort.ToLowerInvariant(), message);
         }
 
         public void SubscribeToNotifications(string skiResort, Func<RedisChannel, RedisValue, Task> handler)
         {
-            Subscriber.Subscribe($"notifications:{skiResort.ToLowerInvariant()}", async (channel, msg) => await handler(channel, msg));
+            Subscriber.Subscribe(skiResort.ToLowerInvariant(), async (channel, msg) => await handler(channel, msg));
         }
+
+        // public void EnsureSubscribedToNotifications(string skiResort, Func<string, Task> onMessageAsync)
+        // {
+        //     var key = skiResort.ToLowerInvariant();
+
+        //     if (_redisSubscribedResorts.TryAdd(key, true))
+        //     {
+        //         // subscribe the first time only
+        //         Subscriber.Subscribe($"notifications:{key}", async (channel, value) =>
+        //         {
+        //             try
+        //             {
+        //                 await onMessageAsync(value);
+        //             }
+        //             catch (Exception ex)
+        //             {
+        //                 _logger.LogError(ex, "Greška pri prosleđivanju Redis poruke.");
+        //             }
+        //         });
+
+        //         _logger.LogInformation("Subscribed to Redis channel notifications:{key}", key);
+        //     }
+        // }
+
+        // // publish (može ostati async)
+        // public async Task PublishNotificationAsync(string skiResort, string message)
+        // {
+        //     var key = skiResort.ToLowerInvariant();
+        //     await Subscriber.PublishAsync($"notifications:{key}", message);
+        // }
 
         public async Task AddSubscriptionAsync(string userId, string skiResort)
         {

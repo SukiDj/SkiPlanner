@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { toast } from "react-toastify";
 import agent from "../api/agent";
 import { AuthUser, LogedUser, Token, User, VisitOption } from "../modules/User";
@@ -6,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { makeAutoObservable, runInAction } from "mobx";
 import { VacationOptions } from "../modules/VacationOptions";
 import { Recommendation } from "../modules/Recommendations";
+import axios from "axios";
 
 export default class UserStore {
     curentUser : LogedUser | undefined= undefined; 
@@ -14,6 +16,18 @@ export default class UserStore {
 
     constructor(){
         makeAutoObservable(this);
+
+        const token = localStorage.getItem("jwt");
+        if (token) {
+            const decoded = jwtDecode<Token>(token);
+            this.curentUser = {
+                id: decoded.nameid,
+                email: decoded.email,
+                uloga: decoded.role,
+                username: decoded.unique_name
+            };
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        }
     }
 
     get isVisitor(){
@@ -53,7 +67,12 @@ export default class UserStore {
                     email: decoded.email,
                     uloga: decoded.role,
                     username: decoded.unique_name
-                }
+                };
+
+                // Sačuvaj token u localStorage i postavi header
+                localStorage.setItem("jwt", answer.token);
+                axios.defaults.headers.common["Authorization"] = `Bearer ${answer.token}`;
+                
                 toast.success("Uspešno ste se prijavili!")
             }
         } catch(error){
@@ -63,7 +82,9 @@ export default class UserStore {
     }
 
     logout = () =>{
-
+        localStorage.removeItem("jwt");
+        delete axios.defaults.headers.common["Authorization"];
+        this.curentUser = undefined;
     }
 
     visitOption = async (option: VacationOptions) =>{

@@ -119,6 +119,24 @@ namespace API.Controllers
 
             var token = await _tokenService.CreateToken(korisnik, korisnikUloga);
 
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            // Upis u Neo4j
+            await _client.Cypher
+                .Match("(k:Korisnik)")
+                .Where((Korisnik k) => k.ID == korisnik.ID)
+                .Create("(k)-[:IMA_TOKEN]->(t:RefreshToken $token)")
+                .WithParam("token", refreshToken)
+                .ExecuteWithoutResultsAsync();
+
+            // Cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+
             return Ok(new
             {
                 Message = "Uspešna prijava",
@@ -240,7 +258,7 @@ namespace API.Controllers
                 .ResultsAsync;
 
             var listaSkijalista = new List<Skijaliste>(posecenaSkijalista);
-            
+
             var slicnaSkijalista = await _client.Cypher
                 .Match("(k:Korisnik)-[:POSETIO]->(p:Skijaliste)")
                 .Match("(p)-[:SLICNO_SKIJALISTE]-(slicno:Skijaliste)")
@@ -270,7 +288,7 @@ namespace API.Controllers
                     .ResultsAsync;
 
                 listaHotela.AddRange(poseceniHoteli);
-                
+
                 var slicniHoteli = await _client.Cypher
                     .Match("(k:Korisnik)-[:POSETIO]->(h:Hotel)")
                     .Match("(h)-[:SLICAN_HOTEL]-(slicno:Hotel)")
@@ -284,7 +302,7 @@ namespace API.Controllers
                     .Return(slicno => slicno.As<Hotel>())
                     .ResultsAsync;
 
-                
+
                 listaHotela.AddRange(slicniHoteli);
 
 
@@ -301,7 +319,7 @@ namespace API.Controllers
                     .ResultsAsync;
 
                 listaRestorana.AddRange(poseceniRestorani);
-                
+
                 var slicniRestorani = await _client.Cypher
                     .Match("(k:Korisnik)-[:POSETIO]->(r:Restoran)")
                     .Match("(r)-[:SLICAN_RESTORAN]-(slicno:Restoran)")
@@ -329,5 +347,39 @@ namespace API.Controllers
 
             return Ok(preporuke);
         }
+        
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (refreshToken == null)
+                return Unauthorized("Nema refresh tokena");
+
+            var result = await _client.Cypher
+                .Match("(k:Korisnik)-[:IMA_TOKEN]->(t:RefreshToken)")
+                .Where((RefreshToken t) => t.Token == refreshToken)
+                .Return((k, t) => new
+                {
+                    Korisnik = k.As<Korisnik>(),
+                    Token = t.As<RefreshToken>()
+                })
+                .ResultsAsync;
+
+            var item = result.SingleOrDefault();
+            if (item == null || !item.Token.IsActive)
+                return Unauthorized("Neispravan ili istekao refresh token");
+
+            var role = await _client.Cypher
+                .Match("(k:Korisnik)-[:IMA_ULOGU]->(r)")
+                .Where((Korisnik k) => k.ID == item.Korisnik.ID)
+                .Return(r => Return.As<string>("labels(r)[0]"))
+                .ResultsAsync;
+
+            var korisnikUloga = role.SingleOrDefault() ?? "NepoznataUloga";
+
+            var noviToken = await _tokenService.CreateToken(item.Korisnik, korisnikUloga);
+            return Ok(new { Token = noviToken });
+        }
+
     }
 }
