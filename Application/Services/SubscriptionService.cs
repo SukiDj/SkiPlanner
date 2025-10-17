@@ -40,28 +40,5 @@ namespace Application.Services
 
             await Task.WhenAll(tasks);
         }
-
-        // private readonly ConcurrentBag<WebSocket> _globalSockets = new();
-
-        // public void AddGlobalConnection(WebSocket socket)
-        // {
-        //     _globalSockets.Add(socket);
-        // }
-
-        // public void RemoveConnection(WebSocket socket)
-        // {
-        //     var sockets = _globalSockets.ToList();
-        //     sockets.Remove(socket);
-        // }
-
-        // public async Task NotifyAllAsync(string message)
-        // {
-        //     var buffer = Encoding.UTF8.GetBytes(message);
-        //     var tasks = _globalSockets
-        //         .Where(s => s.State == WebSocketState.Open)
-        //         .Select(s => s.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None));
-
-        //     await Task.WhenAll(tasks);
-        // }
     }
 }

@@ -4,6 +4,7 @@ import { SkiResort } from '../modules/SkiResort';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
 import { RedisSkiResort } from '../modules/RedisSkiResort';
+import { websocketService } from '../services/websocketService';
 
 export default class RedisSkiResortStore {
  
@@ -128,6 +129,12 @@ export default class RedisSkiResortStore {
     try{
       await agent.redis.subscribe(id, skiRes);
       toast.success("Uspesno zapracivanje skijalista!");
+
+      const socket = (websocketService as any).socket;
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send("refresh_subscriptions");
+        console.log("🔁 Poslat refresh_subscriptions preko WebSocket-a");
+      }
     }catch(err){
       console.log(err)
     }
@@ -139,6 +146,12 @@ export default class RedisSkiResortStore {
     try{
       await agent.redis.unSubscribe(id, skiRes);
       toast.success("Uspesno odjavljivanje!");
+
+      const socket = (websocketService as any).socket;
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send("refresh_subscriptions");
+        console.log("🔁 Poslat refresh_subscriptions preko WebSocket-a");
+      }
     }catch(err){
       console.log(err)
     }

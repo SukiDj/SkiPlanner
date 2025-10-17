@@ -144,28 +144,20 @@ namespace Application.Services
             Subscriber.Subscribe(skiResort.ToLowerInvariant(), async (channel, msg) => await handler(channel, msg));
         }
 
-        // public void EnsureSubscribedToNotifications(string skiResort, Func<string, Task> onMessageAsync)
-        // {
-        //     var key = skiResort.ToLowerInvariant();
+        public void EnsureSubscribed(string skiResort, Func<RedisChannel, RedisValue, Task> handler)
+        {
+            if (_redisSubscribedResorts.ContainsKey(skiResort.ToLowerInvariant()))
+                return;
 
-        //     if (_redisSubscribedResorts.TryAdd(key, true))
-        //     {
-        //         // subscribe the first time only
-        //         Subscriber.Subscribe($"notifications:{key}", async (channel, value) =>
-        //         {
-        //             try
-        //             {
-        //                 await onMessageAsync(value);
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 _logger.LogError(ex, "Greška pri prosleđivanju Redis poruke.");
-        //             }
-        //         });
+            _redisSubscribedResorts[skiResort.ToLowerInvariant()] = true;
 
-        //         _logger.LogInformation("Subscribed to Redis channel notifications:{key}", key);
-        //     }
-        // }
+            Subscriber.Subscribe(skiResort.ToLowerInvariant(), async (channel, msg) =>
+            {
+                await handler(channel, msg);
+            });
+
+            _logger.LogInformation($"✅ Redis pretplata aktivirana za skijalište: {skiResort}");
+        }
 
         // // publish (može ostati async)
         // public async Task PublishNotificationAsync(string skiResort, string message)
