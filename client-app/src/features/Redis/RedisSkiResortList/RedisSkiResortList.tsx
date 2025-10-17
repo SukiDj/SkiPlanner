@@ -35,8 +35,8 @@ const SkiResortList = () => {
         })
     }
     const loadData = async () => {
-    await getAllSubbedSkiR(curentUser!.id); // sačekaj da se subbed resorti učitaju
-    await loadAllResorts();                 // tek onda učitaj sve
+    await getAllSubbedSkiR(curentUser!.id); 
+    await loadAllResorts();  
   };
 
     useEffect(()=>{
@@ -117,26 +117,33 @@ const SkiResortList = () => {
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
-              <Button
-                icon="edit"
-                color="blue"
-                size="tiny"
-                content="Uredi"
-                onClick={() => onEdit(resort)}
-              />
-              <Button
-                icon="trash"
-                color="red"
-                size="tiny"
-                content="Obriši"
-                onClick={() => onDelete(resort.ime)}
-              />
+            {curentUser?.uloga=="RadnikNaSkijalistu" &&(
+                <>
+                    <Button
+                        icon="edit"
+                        color="blue"
+                        size="tiny"
+                        content="Uredi"
+                        onClick={() => onEdit(resort)}
+                    />
+                    <Button
+                    icon="trash"
+                    color="red"
+                    size="tiny"
+                    content="Obriši"
+                    onClick={() => onDelete(resort.ime)}
+                    />
+              </>
+            )
+            }
+              {curentUser?.uloga=="Posetilac" &&(
               <Button
                 color="red"
                 size="tiny"
                 content="Pretplati se"
                 onClick={() => handleSubscribe(resort.ime)}
               />
+              )}
           </Card.Content>
         </Card>
       ))}

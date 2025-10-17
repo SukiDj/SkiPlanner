@@ -7,7 +7,7 @@ import { useStore } from "../../../stores/store";
 
 const SkiResortFormModal: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const {redisSkiResort} = useStore();
+  const {redisSkiResort, userStore} = useStore();
   const {createSkiResort} = redisSkiResort;
   const [formData, setFormData] = useState<RedisSkiResort>({
     ime: "",
@@ -16,6 +16,7 @@ const SkiResortFormModal: React.FC = () => {
     zatvorenihStaza: 0,
     brojSkijasa: 0,
   });
+  const {curentUser} = userStore;
 
   const handleChange = (
     _: React.ChangeEvent<HTMLInputElement>,
@@ -38,9 +39,12 @@ const SkiResortFormModal: React.FC = () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: "2em" }}>
-      <Button primary onClick={() => setOpen(true)}>
-        + Dodaj novo skijalište
-      </Button>
+        {curentUser?.uloga === "RadnikNaSkijalistu" && (
+            <Button primary onClick={() => setOpen(true)}>
+                + Dodaj novo skijalište
+            </Button>
+        )}
+      
 
       <Modal open={open} onClose={() => setOpen(false)} size="small" closeIcon>
         <Header icon="snowflake" content="Kreiranje skijališta" />

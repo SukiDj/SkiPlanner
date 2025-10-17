@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Image, Icon } from 'semantic-ui-react'
+import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Icon } from 'semantic-ui-react'
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
 import { useStore } from '../../stores/store'
@@ -34,7 +34,6 @@ const NavBar = () => {
             )
         }
     ]
-console.log(curentUser?.uloga)
     return (
         <>
             <Menu tabular>
@@ -50,12 +49,14 @@ console.log(curentUser?.uloga)
                     active={active === 'Isplaniraj odmor'}
                     onClick={() => handleClick('Isplaniraj odmor')}
                 />
+                {(curentUser?.uloga === "Posetilac" || curentUser?.uloga === "RadnikNaSkijalistu") &&
                 <MenuItem
                 as={NavLink} to='/info'
                     name='Info'
                     active={active === 'Info'}
                     onClick={() => handleClick('Info')}
                 />
+                }
                 {curentUser?.uloga === "Posetilac" &&
                 <MenuItem
                     as={NavLink} to='/preporuke'
