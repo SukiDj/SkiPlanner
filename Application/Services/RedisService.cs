@@ -141,7 +141,17 @@ namespace Application.Services
 
         public void SubscribeToNotifications(string skiResort, Func<RedisChannel, RedisValue, Task> handler)
         {
-            Subscriber.Subscribe(skiResort.ToLowerInvariant(), async (channel, msg) => await handler(channel, msg));
+            //Subscriber.Subscribe(skiResort.ToLowerInvariant(), async (channel, msg) => await handler(channel, msg));
+
+            var key = skiResort.ToLowerInvariant();
+
+            // spreči višestruku pretplatu
+            if (_redisSubscribedResorts.ContainsKey(key))
+                return;
+
+            _redisSubscribedResorts[key] = true;
+
+            Subscriber.Subscribe(key, async (channel, msg) => await handler(channel, msg));
         }
 
         public void EnsureSubscribed(string skiResort, Func<RedisChannel, RedisValue, Task> handler)

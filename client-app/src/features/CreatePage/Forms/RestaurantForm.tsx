@@ -28,7 +28,6 @@ export default function RestaurantForm({ initialRestaurant, onFormSubmit }: Prop
     prosecnaCena: Yup.number().required('Unesite prosečnu cenu').min(500, 'Prosečna cena mora da bude minimum 500din'),
     lat: Yup.number().required('Obeležite restoran na mapi'),
     lng: Yup.number().required('Obeležite restoran na mapi'),
-    // Ako je create, skijaliste je obavezno, ako je edit - ne mora jer je već postavljeno
     skijaliste: initialRestaurant === undefined
       ? Yup.string().required('Izaberite skijalište')
       : Yup.string()
@@ -70,12 +69,15 @@ export default function RestaurantForm({ initialRestaurant, onFormSubmit }: Prop
                 <TextInput name="tipKuhinje" placeholder="Tip kuhinje" />
                 <TextInput name="ocena" placeholder="Ocena" type="number" />
                 <TextInput name="prosecnaCena" placeholder="Prosečna cena" type="number" />
+                {initialRestaurant === undefined && (
                   <SelectInput
-                    options={getSkiResortOptions}
-                    placeholder="Skijališta"
-                    name="skijaliste"
-                    
-                  />
+                      options={getSkiResortOptions}
+                      placeholder="Skijališta"
+                      name="skijaliste"
+                      
+                    />
+                )}
+                  
               </GridColumn>
               <Divider vertical />
               <Grid.Column>
@@ -85,14 +87,18 @@ export default function RestaurantForm({ initialRestaurant, onFormSubmit }: Prop
                     setFieldValue('lng', lng);
                   }}
                 />
+                
+              </Grid.Column>
+              <div style={{width:"100%", display:'flex', justifyContent:"right", marginBottom:'5px'}}>
                 <Button
                   disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
                   positive
                   type="submit"
-                  content={initialRestaurant ? "Update" : "Create"}
-                  style={{ marginTop: "1rem" }}
+                  content={initialRestaurant ? "Izmeni" : "Kreiraj"}
+                  
                 />
-              </Grid.Column>
+              </div>
+              
             </Grid>
           </Segment>
         </Form>

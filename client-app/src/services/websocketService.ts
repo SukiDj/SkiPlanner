@@ -43,21 +43,24 @@ import { toast } from "react-toastify";
 
 type MessageCallback = (msg: string) => void;
 
+
+
 class WebSocketService {
   private socket: WebSocket | null = null;
   private reconnectTimeout = 3000;
   private isConnecting = false;
   private listeners: MessageCallback[] = [];
+  private shouldReconnect = true;
 
-  connectWebSocket() {
+  connectWebSocket(userId:string) {
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.isConnecting)) return;
 
-    const token = localStorage.getItem("jwt");
-    if (!token) return;
-
+    // const token = localStorage.getItem("jwt");
+    // if (!token) return;
+    if(!userId) return;
     this.isConnecting = true;
-
-    this.socket = new WebSocket(`wss://localhost:5001/ws?token=${token}`);
+  this.shouldReconnect = true;
+    this.socket = new WebSocket(`wss://localhost:5001/ws?userId=${userId}`);
 
     this.socket.onopen = () => {
       console.log(" WebSocket connected");
@@ -81,7 +84,9 @@ class WebSocketService {
       console.warn(" WebSocket disconnected, reconnecting...");
       this.socket = null;
       this.isConnecting = false;
-      setTimeout(() => this.connectWebSocket(), this.reconnectTimeout);
+       if (this.shouldReconnect) {
+      setTimeout(() => this.connectWebSocket(userId), this.reconnectTimeout);
+       }
     };
 
     this.socket.onerror = (err) => {
@@ -92,6 +97,7 @@ class WebSocketService {
 
   disconnect() {
     this.socket?.close();
+     this.shouldReconnect = false; 
     this.socket = null;
   }
 

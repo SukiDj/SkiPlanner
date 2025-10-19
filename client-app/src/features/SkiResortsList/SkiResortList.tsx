@@ -23,6 +23,8 @@ function SkiResortList() {
     loadHotelsForResort(resort.id!);
     loadRestaurants(resort.id!);
     loadAllSkiSlopes(resort.id!);
+    setSelectedHotel(undefined);
+    setSelectedRestaurant(undefined);
   };
 
   const toggleHotels = () => {
@@ -53,6 +55,7 @@ function SkiResortList() {
         setIsSkyResortEditing(true);
     };
 
+
   return (
     <>
     <Accordion styled>
@@ -78,7 +81,7 @@ function SkiResortList() {
                 onClick={() => toggleHotels()}
               >
                 <Icon name="dropdown" />
-                Hotels
+                Hoteli
               </Accordion.Title>
               <Accordion.Content active={activeHotel}>
                 <HotelList/>
@@ -93,7 +96,7 @@ function SkiResortList() {
                 onClick={() => toggleRestaurants()}
               >
                 <Icon name="dropdown" />
-                Restaurants
+                Restorani
               </Accordion.Title>
               <Accordion.Content active={activeRestaurant}>
                 <RestaurantList />
@@ -127,8 +130,9 @@ function SkiResortList() {
           {selectedResort && (
             <SkiResortForm
               initialSkiResort={selectedResort}
-              onFormSubmit={(updatedResort) => {
-              skiResortStore.updateSkiResort(updatedResort.id!, updatedResort);
+              onFormSubmit={async (updatedResort) => {
+               await skiResortStore.updateSkiResort(updatedResort.id!, updatedResort);
+               handleClose();
               }
           }
             />

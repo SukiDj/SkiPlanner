@@ -24,7 +24,7 @@ function SkiSlopesInfo() {
             </CardGroup>
             </>
             
-        },
+        }
         {numberOfBlueSSlopes !==0 &&
             <>
                 <h1>
@@ -38,7 +38,7 @@ function SkiSlopesInfo() {
                 } 
                 </CardGroup>
             </>
-        },
+        }
         {numberOfGreenSSlopes!==0 &&
             
             <>
@@ -53,7 +53,7 @@ function SkiSlopesInfo() {
                 } 
                 </CardGroup>
             </>
-        },
+        }
         {numberOfBlackSSlopes !==0 &&
             <>
                 <h1>
@@ -68,9 +68,6 @@ function SkiSlopesInfo() {
                 </CardGroup>
             </>
         }
-        
-        
-        
         
     </>
     

@@ -8,6 +8,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { VacationOptions } from "../modules/VacationOptions";
 import { Recommendation } from "../modules/Recommendations";
 import axios from "axios";
+import { websocketService } from "../services/websocketService";
 
 export default class UserStore {
     curentUser : LogedUser | undefined= undefined; 
@@ -85,6 +86,8 @@ export default class UserStore {
         localStorage.removeItem("jwt");
         delete axios.defaults.headers.common["Authorization"];
         this.curentUser = undefined;
+        
+        websocketService.disconnect();
     }
 
     visitOption = async (option: VacationOptions) =>{

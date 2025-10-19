@@ -18,7 +18,7 @@ import WebSocketNotifications from "./WebSocketNotification";
       if(isLoading) return <LoadingComponent content='Ucitavanje sajta...' />
   return (
     <>
-        <div className='container'>
+        <div className='container' style={{backgroundColor:"white"}}>
             <div className='mapContainer'>
                 <Map onLocationSelect={function (lat: number, lng: number): void {} }/>
             </div>
@@ -30,10 +30,12 @@ import WebSocketNotifications from "./WebSocketNotification";
             </div>
             
         </div>
-        {selectedResort && <SkiSlopes/>}
+        <div style={{backgroundColor:"white"}}>
+          {selectedResort && <SkiSlopes/>}
+        </div>
+        
 
         {/* Notifikacije */}
-        <WebSocketNotifications />
     </>
   )
 }

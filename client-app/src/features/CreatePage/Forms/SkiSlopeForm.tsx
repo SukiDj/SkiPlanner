@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { SkiSlope } from "../../../modules/SkiSlope";
 import TextInput from "../../../common/TextInput";
 import SelectInput from "../../../common/SelectInput";
-import { Button } from "semantic-ui-react";
+import { Button, Segment } from "semantic-ui-react";
 import { useStore } from "../../../stores/store";
 import { v4 as uuid } from "uuid";
 
@@ -20,8 +20,10 @@ export default function SkiSlopeForm({ initialSkiSlope, onFormSubmit }: Props) {
     duzina: Yup.number().required('Required').min(100, 'Duzina mora da bude minimum 100m'),
     tezina: Yup.string().required('Required'),
     skijaliste: Yup.lazy(() =>
-      initialSkiSlope === undefined ? Yup.string() : Yup.string().required('Required')
-    )
+  initialSkiSlope === undefined
+    ? Yup.string().required("Required") // obavezno samo kod kreiranja
+    : Yup.string() // nije obavezno u edit modu
+)
   });
 
   const initialValues: SkiSlope = initialSkiSlope ?? {
@@ -33,6 +35,7 @@ export default function SkiSlopeForm({ initialSkiSlope, onFormSubmit }: Props) {
   };
 
   const handleFormSubmit = (skiSlope: SkiSlope) => {
+    console.log("cao")
     if (!skiSlope.id) {
       const newSlope: SkiSlope = {
         ...skiSlope,
@@ -51,28 +54,51 @@ export default function SkiSlopeForm({ initialSkiSlope, onFormSubmit }: Props) {
       onSubmit={handleFormSubmit}
       enableReinitialize
     >
-      {({ handleSubmit, isSubmitting, isValid, dirty, values }) => (
-        <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
-          <TextInput name='naziv' placeholder="Naziv" />
-          <SelectInput 
-            options={getSkiSlopeColor} 
-            placeholder="Tezina" 
-            name='tezina' 
-          />
-          <TextInput name='duzina' placeholder="Duzina" type="number" />
-          
-            <SelectInput 
-              options={getSkiResortOptions} 
-              placeholder="Skijalista" 
-              name='skijaliste' 
-            />
-          <Button
-            disabled={isSubmitting || !dirty || !isValid}
-            floated='right'
-            positive
-            type="submit"
-            content={initialSkiSlope ? 'Update' : 'Create'}
-          />
+      {({  isSubmitting,  values }) => (
+        <Form className='ui form'  autoComplete='off'>
+            <Segment>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1.5rem",
+              }}
+            >
+              {/* Leva kolona */}
+              <div>
+                <TextInput name="naziv" placeholder="Naziv" />
+                <SelectInput
+                  options={getSkiSlopeColor}
+                  placeholder="Težina"
+                  name="tezina"
+                />
+              </div>
+
+              {/* Desna kolona */}
+              <div>
+                <TextInput
+                  name="duzina"
+                  placeholder="Dužina (u metrima)"
+                  type="number"
+                />
+                {initialSkiSlope === undefined && (
+                  <SelectInput
+                    options={getSkiResortOptions}
+                    placeholder="Skijalište"
+                    name="skijaliste"
+                  />
+                )}
+              </div>
+            </div>
+            <div style={{width:"100%", display:'flex', justifyContent:"right", marginTop:'5px'}}>
+              <Button
+                disabled={isSubmitting }
+                positive
+                type="submit"
+                content={initialSkiSlope ? "Izmeni" : "Kreiraj"}
+              />
+            </div>
+          </Segment>
         </Form>
       )}
     </Formik>

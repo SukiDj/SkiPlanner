@@ -12,54 +12,69 @@ interface SkiSlopeCardInfoProps {
 
 function SkiSlopeCardInfo({index, skiSlope}:SkiSlopeCardInfoProps) {
   const { skiSlopeStore, userStore } = useStore();
-  const { setSelectedSlope, openForm, update, closeForm, deleteSkiSlope } = skiSlopeStore;
+  const { setSelectedSlope, openForm, update, closeForm, deleteSkiSlope, selectedSlope } = skiSlopeStore;
   const {isEmploye} = userStore;
 
-  const handleSlopeSubmit = (slope: SkiSlope) => {
-  
-    update(slope.id, slope);
-  
+  const handleSlopeSubmit = async (slope: SkiSlope) => {
+    await update(slope.id, slope);
   closeForm();  
 };
-
+console.log(selectedSlope)
   return (
     <>
-    <Card>
-        <CardContent index={index}>
-        <CardHeader>{skiSlope.naziv}</CardHeader>
-        <CardMeta>{skiSlope.duzina}</CardMeta>
-        <CardDescription>
-            Matthew is a pianist living in Nashville.
-        </CardDescription>
-        {isEmploye &&<>
-        <Button
-          onClick={() => {
-            setSelectedSlope(skiSlope);
-            openForm();
-          }}
-        >
-          Izmeni
-        </Button>
-        <Button
-          size="small"
-          color="red"
-          content="Obrisi"
-          onClick={() => deleteSkiSlope(skiSlope)}
-          />
-        </>}
-        
+      <Card raised color="blue">
+        <CardContent>
+          <CardHeader style={{ fontSize: "1.4em", marginBottom: "0.3em" }}>
+            🏔️ {skiSlope.naziv}
+          </CardHeader>
+          
+          <CardDescription style={{ marginTop: "0.5em", lineHeight: "1.5em" }}>
+            <div><strong>Dužina:</strong> {skiSlope.duzina} m</div>
+            <div><strong>Težina:</strong> {skiSlope.tezina}</div>
+          </CardDescription>
+
+          {isEmploye && (
+            <div style={{ marginTop: "1em" }}>
+              <Button
+                size="small"
+                color="blue"
+                onClick={() => {
+                  setSelectedSlope(skiSlope);
+                  openForm();
+                }}
+              >
+                Izmeni
+              </Button>
+              <Button
+                size="small"
+                color="red"
+                content="Obriši"
+                onClick={() => deleteSkiSlope(skiSlope)}
+              />
+            </div>
+          )}
         </CardContent>
-    </Card>
-    {skiSlopeStore.editMode && (
-  <Modal open={skiSlopeStore.editMode} onClose={skiSlopeStore.closeForm} size="small" dimmer="blurring">
-    <Modal.Content>
-      <SkiSlopeForm 
-        initialSkiSlope={skiSlopeStore.selectedSlope} 
-        onFormSubmit={handleSlopeSubmit} 
-      />
-    </Modal.Content>
-  </Modal>
-)}
+      </Card>
+
+      {skiSlopeStore.editMode && (
+        <Modal
+          open={skiSlopeStore.editMode}
+          onClose={skiSlopeStore.closeForm}
+          size="small"
+          dimmer="blurring"
+        >
+           <Modal.Header>Izmeni Hotel</Modal.Header>
+          <Modal.Content>
+            {selectedSlope && (
+              <SkiSlopeForm
+              initialSkiSlope={selectedSlope}
+              onFormSubmit={handleSlopeSubmit}
+            />
+            )}
+            
+          </Modal.Content>
+        </Modal>
+      )}
     </>
   )
 }

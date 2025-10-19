@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { SkiSlope } from "../modules/SkiSlope";
 import agent from "../api/agent";
+import { toast } from "react-toastify";
 
 export default class SkiSlopeStore {
 
@@ -37,7 +38,7 @@ export default class SkiSlopeStore {
     create = async (id:string, skiSlope: SkiSlope) =>{
         try{
             await agent.skiSlope.create(id,skiSlope);
-
+            toast.success("Uspesno kreiranje ski staze!");
         } catch(error){
             console.log(error);
         }
@@ -46,7 +47,7 @@ export default class SkiSlopeStore {
     update = async (id: string, skiSlope: SkiSlope) => {
   try {
     await agent.skiSlope.update(id, skiSlope);
-
+    toast.success("Uspesna izmena ski staze!");
     let foundKey: string | undefined;
     let foundRegistry: Map<string, SkiSlope> | undefined;
 
@@ -120,6 +121,7 @@ export default class SkiSlopeStore {
             this.numberOfBlackSSlopes -= 1;
             break;
       }
+      toast.success("Uspesno brisanje ski staze!");
     }catch(err){
       console.log(err)
     }

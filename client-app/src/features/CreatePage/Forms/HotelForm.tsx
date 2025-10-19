@@ -56,7 +56,7 @@ export default function HotelForm({ initialHotel, onFormSubmit }: Props) {
       onSubmit={(values) => onFormSubmit(values)}
       enableReinitialize
     >
-      {({ handleSubmit, setFieldValue, isValid, dirty, values }) => (
+      {({ handleSubmit, setFieldValue, isValid, dirty, values, resetForm }) => (
         <Form className="ui form" onSubmit={handleSubmit}>
           <Segment>
             <Grid columns={2}>
@@ -68,7 +68,10 @@ export default function HotelForm({ initialHotel, onFormSubmit }: Props) {
                 <TextInput name="cenaTrokrevetneSobe" placeholder="Cena trokrevetne sobe" type="number" />
                 <TextInput name="cenaCetvorokrevetneSobe" placeholder="Cena četvorokrevetne sobe" type="number" />
                 <TextInput name="cenaPetokrevetneSobe" placeholder="Cena petokrevetne sobe" type="number" />
-                <SelectInput options={getSkiResortOptions} placeholder="Skijališta" name='skijaliste' />
+                {initialHotel === undefined && (
+<SelectInput options={getSkiResortOptions} placeholder="Skijališta" name='skijaliste' />
+                )}
+                
               </GridColumn>
               <Divider vertical></Divider>
               <Grid.Column>
@@ -79,13 +82,15 @@ export default function HotelForm({ initialHotel, onFormSubmit }: Props) {
                   }}
                   
                 />
+              </Grid.Column>
+              <div style={{width:"100%", display:'flex', justifyContent:"right", marginBottom:'5px'}}>
                 <Button
                   disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
                   positive
                   type="submit"
-                  content={initialHotel != undefined ? "Update" : "Create"}
+                  content={initialHotel != undefined ? "Izmeni" : "Kreiraj"}
                 />
-              </Grid.Column>
+              </div>
             </Grid>
           </Segment>
         </Form>

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { Hotel } from '../modules/Hotel';
 import agent from '../api/agent';
+import { toast } from 'react-toastify';
 
 export default class HotelStore {
 
@@ -18,8 +19,7 @@ export default class HotelStore {
   createHotel = async (id:string, hotel:Hotel) =>{
     try{
       await agent.hotel.create(id,hotel);
-      
-
+      toast.success("Uspesno kreiranje hotela!");
     } catch (error)
     {
       console.log(error);
@@ -38,6 +38,7 @@ export default class HotelStore {
       if (this.selectedHotel?.id === id) {
         this.selectedHotel = hotel;
       }
+      toast.success("Uspesna izmena hotela!");
     } catch (error)
     {
       console.log(error);
@@ -51,6 +52,7 @@ export default class HotelStore {
       this.hotelRegistry.delete(id);
       if(this.selectedHotel?.id === id)
         this.setSelectedHotel(undefined);
+      toast.success("Uspesno brisanje hotela!");
     }catch(err){
       console.log(err)
     }
@@ -77,7 +79,6 @@ export default class HotelStore {
       hotels.forEach(hotel=>{
         this.setAllHotels(hotel);
       });
-      console.log(this.getHotels)
     }
     catch(error){
       console.log(error)

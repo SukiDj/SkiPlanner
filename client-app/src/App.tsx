@@ -6,12 +6,22 @@ import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { websocketService } from './services/websocketService'
+import { useStore } from './stores/store'
 
 function App() {
+  const {userStore} = useStore();
+    const {curentUser} = userStore;
   
   useEffect(() => {
-    websocketService.connectWebSocket();
-  }, []);
+    if(curentUser)
+    {
+      websocketService.connectWebSocket(curentUser!.id);
+    }
+    return () => {
+      websocketService.disconnect();
+    };
+    
+  }, [curentUser]);
   return (
     <>
     <ToastContainer position="top-right" autoClose={3000} />

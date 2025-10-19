@@ -23,7 +23,6 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
     ime: Yup.string().required('Unesite ime skijališta'),
     popularnost: Yup.number().required('Unesite popularnost').min(1, 'Popularnost mora da bude minimum 1'),
     cenaSkiPasa: Yup.number().required('Unesite cenu ski pasa').min(500, 'Cena ski pasa mora da bude veća od 500din'),
-    brojStaza: Yup.number().required('Unesite broj staza').min(1, 'Broj staza mora da bude minimum 1'),
     lat: Yup.number().required('Obeležite skijalište na mapi'),
     lng: Yup.number().required('Obeležite skijalište na mapi'),
   });
@@ -33,7 +32,6 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
     ime: '',
     popularnost: 0,
     cenaSkiPasa: 0,
-    brojStaza: 0,
     lat: 0,
     lng: 0,
   };
@@ -53,7 +51,6 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
                 <TextInput name="ime" placeholder="Ime" />
                 <TextInput name="popularnost" placeholder="Popularnost" type="number" />
                 <TextInput name="cenaSkiPasa" placeholder="Cena ski pasa" type="number" />
-                <TextInput name="brojStaza" placeholder="Broj staza" type="number" />
               </GridColumn>
               <Divider vertical></Divider>
 
@@ -64,14 +61,15 @@ export default function SkiResortForm({ initialSkiResort, onFormSubmit }: Props)
                     setFieldValue('lng', lng);
                   }}
                 />
+              </Grid.Column>
+              <div style={{width:"100%", display:'flex', justifyContent:"right", marginBottom:'5px'}}>
                 <Button
-                  disabled={!isValid  || values.lat === 0 || values.lng === 0}
+                  disabled={!isValid || !dirty || values.lat === 0 || values.lng === 0}
                   positive
                   type="submit"
                   content={initialSkiResort ? "Izmeni" : "Kreiraj"}
-                  loading={loading}
                 />
-              </Grid.Column>
+              </div>
             </Grid>
           </Segment>
         </Form>

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Restaurant } from "../modules/Restaurant";
 import agent from "../api/agent";
+import { toast } from "react-toastify";
 
 export default class RestaurantStore {
     restaurantRegistry = new Map<string,Restaurant>();
@@ -14,6 +15,7 @@ export default class RestaurantStore {
     createRestaurant = async (id:string,restaurant:Restaurant) =>{
         try{
             await agent.restaurant.create(id,restaurant);
+            toast.success("Uspesno kreiranje restorana!");
         } catch (error) {
             console.log(error);
         }
@@ -28,6 +30,7 @@ export default class RestaurantStore {
       if (this.selectedRestaurant?.id === id) {
         this.selectedRestaurant = restaurant;
       }
+      toast.success("Uspesna izmena restorana!");
     } catch (error)
     {
       console.log(error);
@@ -41,6 +44,7 @@ export default class RestaurantStore {
       this.restaurantRegistry.delete(id);
       if(this.selectedRestaurant?.id === id)
         this.setSelectedRestaurant(undefined);
+      toast.success("Uspesno brisanje restorana!");
     }catch(err){
       console.log(err)
     }

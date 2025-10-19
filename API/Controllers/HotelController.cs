@@ -71,8 +71,8 @@ namespace API.Controllers
                 .Match("(h1:Hotel)", "(h2:Hotel)")
                 .Where("h1.ID = $id AND h2.ID <> $id")
                 .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
-                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
-                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 500")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 5000")
                 .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
                 .WithParam("id", hotel.ID)
                 .ExecuteWithoutResultsAsync();
@@ -113,8 +113,8 @@ namespace API.Controllers
                 .Match("(h1:Hotel)", "(h2:Hotel)")
                 .Where("h1.ID = $id AND h2.ID <> $id")
                 .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
-                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
-                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 500")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 5000")
                 .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
                 .WithParam("id", hotel.ID)
                 .ExecuteWithoutResultsAsync();
@@ -169,8 +169,8 @@ namespace API.Controllers
                 .Match("(h1:Hotel)", "(h2:Hotel)")
                 .Where("h1.ID = $id AND h2.ID <> $id")
                 .AndWhere("abs(h1.Ocena - h2.Ocena) <= 0.5")
-                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 100")
-                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 10")
+                .AndWhere("abs(h1.Udaljenost - h2.Udaljenost) <= 500")
+                .AndWhere("abs(h1.CenaDvokrevetneSobe - h2.CenaDvokrevetneSobe) <= 5000")
                 .Create("(h1)-[:SLICAN_HOTEL]->(h2)")
                 .WithParam("id", hotel.ID)
                 .ExecuteWithoutResultsAsync();

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { MenuItem, Menu, Button, Modal, Tab, Dropdown, Icon } from 'semantic-ui-react'
 import LoginForm from '../LoginRegister/LoginForm'
 import RegisterForm from '../LoginRegister/RegisterForm'
@@ -15,6 +15,12 @@ const NavBar = () => {
     const closeModal = () => setModalOpen(false)
     const {userStore} = useStore();
     const {curentUser} = userStore;
+    const nav =useNavigate();
+
+    const handleLogout = () =>{
+        userStore.logout();
+        nav("/");
+    }
 
     const panes = [
         {
@@ -92,7 +98,7 @@ const NavBar = () => {
             <Dropdown.Menu>
                 <Dropdown.Item 
                     text='Odjavi se' 
-                    onClick={userStore.logout} 
+                    onClick={handleLogout} 
                 />
             </Dropdown.Menu>
         </Dropdown>

@@ -3,7 +3,6 @@ export type SkiResort = {
     ime: string;
     popularnost: number;
     cenaSkiPasa: number;
-    brojStaza: number;
     lat: number;
     lng: number;
 }

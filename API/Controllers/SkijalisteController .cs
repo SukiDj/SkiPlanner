@@ -59,6 +59,7 @@ namespace API.Controllers
                     skijaliste.Ime,
                     skijaliste.Popularnost,
                     skijaliste.CenaSkiPasa,
+                    skijaliste.BrojStaza,
                     skijaliste.Lat,
                     skijaliste.Lng
                 })
@@ -68,8 +69,8 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(s1:Skijaliste)", "(s2:Skijaliste)")
                 .Where("s1.ID = $id AND s2.ID <> $id")
-                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
-                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
+                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 2000")
+                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 25")
                 //.AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
                 .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
                 .WithParam("id", skijaliste.ID)
@@ -119,8 +120,8 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(s1:Skijaliste)", "(s2:Skijaliste)")
                 .Where("s1.ID = $id AND s2.ID <> $id")
-                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 5")
-                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 5")
+                .AndWhere("abs(s1.CenaSkiPasa - s2.CenaSkiPasa) < 2000")
+                .AndWhere("abs(s1.Popularnost - s2.Popularnost) < 25")
                 //.AndWhere("abs(s1.BrojStaza - s2.BrojStaza) < 5")
                 .Create("(s1)-[:SLICNO_SKIJALISTE]->(s2)")
                 .WithParam("id", id)
@@ -148,6 +149,12 @@ namespace API.Controllers
                 .DetachDelete("s, x")
                 .ExecuteWithoutResultsAsync();
 
+            await _client.Cypher
+                .Match("(s:Skijaliste)")
+                .Where((Skijaliste s) => s.ID == id)
+                .DetachDelete("s")
+                .ExecuteWithoutResultsAsync();
+
             return Ok($"Skijalište sa ID-jem {id} i svi povezani entiteti su uspešno obrisani.");
         }
 
@@ -159,11 +166,14 @@ namespace API.Controllers
                 .Match("(sk:Skijaliste)");
 
             if (zahtev.IDSkijalista != Guid.Empty)
+            {
                 skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.ID == zahtev.IDSkijalista);
-
-
-            if (zahtev.MinBrojStaza > 0)
-                skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
+                if (zahtev.MinBrojStaza > 0)
+                    skijalistaQuery = skijalistaQuery.AndWhere((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
+            }
+            else
+                if (zahtev.MinBrojStaza > 0)
+                    skijalistaQuery = skijalistaQuery.Where((Skijaliste sk) => sk.BrojStaza >= zahtev.MinBrojStaza);
 
             var skijalista = await skijalistaQuery.Return(sk => sk.As<Skijaliste>()).ResultsAsync;
 

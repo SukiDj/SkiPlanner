@@ -68,8 +68,8 @@ namespace API.Controllers
                 .Match("(r1:Restoran)", "(r2:Restoran)")
                 .Where("r1.ID = $id AND r2.ID <> $id")
                 .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
-                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
-                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.7")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 500")
                 .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
                 .WithParam("id", restoran.ID)
                 .ExecuteWithoutResultsAsync();
@@ -107,8 +107,8 @@ namespace API.Controllers
                 .Match("(r1:Restoran)", "(r2:Restoran)")
                 .Where("r1.ID = $id AND r2.ID <> $id")
                 .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
-                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
-                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.7")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 500")
                 .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
                 .WithParam("id", restoran.ID)
                 .ExecuteWithoutResultsAsync();
@@ -159,8 +159,8 @@ namespace API.Controllers
                 .Match("(r1:Restoran)", "(r2:Restoran)")
                 .Where("r1.ID = $id AND r2.ID <> $id")
                 .AndWhere("r1.TipKuhinje = r2.TipKuhinje")
-                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.5")
-                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 5")
+                .AndWhere("abs(r1.Ocena - r2.Ocena) <= 0.7")
+                .AndWhere("abs(r1.ProsecnaCena - r2.ProsecnaCena) <= 500")
                 .Create("(r1)-[:SLICAN_RESTORAN]->(r2)")
                 .WithParam("id", restoran.ID)
                 .ExecuteWithoutResultsAsync();

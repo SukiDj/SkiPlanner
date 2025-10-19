@@ -23,28 +23,28 @@ namespace Application.Services
 
         public async Task HandleConnectionAsync(HttpContext context, WebSocket socket)
         {
-            var token = context.Request.Query["token"].ToString();
+            var userId = context.Request.Query["userId"].ToString();
 
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(userId))
             {
                 await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token nije prosleđen", CancellationToken.None);
                 return;
             }
 
-            var handler = new JwtSecurityTokenHandler();
-            JwtSecurityToken jwtToken;
+            // var handler = new JwtSecurityTokenHandler();
+            // JwtSecurityToken jwtToken;
 
-            try
-            {
-                jwtToken = handler.ReadJwtToken(token);
-            }
-            catch
-            {
-                await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Neispravan token", CancellationToken.None);
-                return;
-            }
+            // try
+            // {
+            //     jwtToken = handler.ReadJwtToken(token);
+            // }
+            // catch
+            // {
+            //     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Neispravan token", CancellationToken.None);
+            //     return;
+            // }
 
-            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+            // var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
 
             Console.WriteLine("");
             Console.WriteLine($"✅ Korisnik {userId} povezan na WebSocket");
