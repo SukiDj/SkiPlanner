@@ -179,26 +179,6 @@ namespace API.Controllers
             return Ok($"Hotel sa ID-jem {id} je uspešno ažuriran.");
         }
 
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> ObrisiHotel(Guid id)
-        // {
-        //     var existingHotel = await _client.Cypher
-        //         .Match("(h:Hotel)")
-        //         .Where((Hotel h) => h.ID == id)
-        //         .Return(h => h.As<Hotel>())
-        //         .ResultsAsync;
-
-        //     if (existingHotel.SingleOrDefault() == null)
-        //         return NotFound($"Hotel sa ID-jem {id} ne postoji.");
-
-        //     await _client.Cypher
-        //         .Match("(h:Hotel)")
-        //         .Where((Hotel h) => h.ID == id)
-        //         .Delete("h")
-        //         .ExecuteWithoutResultsAsync();
-
-        //     return Ok($"Hotel sa ID-jem {id} je uspešno obrisan.");
-        // }
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiHotel(Guid id)
         {
@@ -214,7 +194,7 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(h:Hotel)")
                 .Where((Hotel h) => h.ID == id)
-                .DetachDelete("h")   // <-- OVDE PROMENA
+                .DetachDelete("h")
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Hotel sa ID-jem {id} je uspešno obrisan.");
@@ -304,24 +284,6 @@ namespace API.Controllers
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Veza između hotela sa ID-jem {hotelId} i skijališta sa ID-jem {skijalisteId} je uspešno obrisana.");
-        }
-
-        // Funkcija za dodavanje veza sa sličnim hotelima
-        private async Task DodajVezeSaSlicnimHotelima(Hotel hotel)
-        {
-            await _client.Cypher
-                .Match("(h:Hotel)")
-                .Where("h.ID <> $ID")
-                .AndWhere("abs(h.Ocena - $Ocena) <= 0.5")
-                .AndWhere("abs(h.CenaDvokrevetneSobe - $CenaDvokrevetneSobe) <= 100")
-                .Create("(h1:Hotel {ID: $ID})-[r:SLICAN]->(h)")
-                .WithParams(new
-                {
-                    hotel.ID,
-                    hotel.Ocena,
-                    hotel.CenaDvokrevetneSobe
-                })
-                .ExecuteWithoutResultsAsync();
         }
     }
 }

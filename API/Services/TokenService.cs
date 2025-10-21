@@ -44,7 +44,6 @@ namespace API.Services
             return tokenHandler.WriteToken(token);
         }
 
-        //refresh token mozda da napravis
         public RefreshToken GenerateRefreshToken()
         {
             var randomNumber = new byte[64];

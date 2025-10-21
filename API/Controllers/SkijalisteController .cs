@@ -229,7 +229,6 @@ namespace API.Controllers
 
                 if (!restorani.Any() && zahtev.MaxBudzet > 0)
                 {
-                    // Ako su restorani bitni deo kalkulacije i nema ih, preskoči ovo skijalište
                     continue;
                 }
 
@@ -269,87 +268,6 @@ namespace API.Controllers
 
             return Ok(opcije);
         }
-
-        // funk gde moraju da se unesu svi parametri za filtriranje
-
-        // [HttpPost("FiltrirajOpcijeZaZimovanje")]
-        // public async Task<IActionResult> FiltrirajOpcijeZaZimovanje([FromBody] ZahtevZaFiltriranje zahtev)
-        // {
-        //     var skijalista = await _client.Cypher
-        //         .Match("(sk:Skijaliste)")
-        //         .Return(sk => sk.As<Skijaliste>())
-        //         .ResultsAsync;
-
-        //     var opcije = new List<OpcionaPonuda>();
-
-        //     foreach (var skijaliste in skijalista)
-        //     {
-        //         // Dohvati sve staze za skijalište koje odgovaraju težini i dužini
-        //         var staze = await _client.Cypher
-        //             .Match("(s:Staza)-[:PRIPADA]->(sk:Skijaliste)")
-        //             .Where((Skijaliste sk) => sk.ID == skijaliste.ID)
-        //             .AndWhere((Staza s) => s.Tezina == zahtev.Tezina)
-        //             .AndWhere((Staza s) => s.Duzina >= zahtev.MinDuzinaStaze)
-        //             .AndWhere((Staza s) => s.Duzina <= zahtev.MaxDuzinaStaze)
-        //             .Return(s => s.As<Staza>())
-        //             .ResultsAsync;
-
-        //         if (!staze.Any()) continue;
-
-        //         // Dohvati sve hotele za skijalište koji odgovaraju oceni i udaljenosti
-        //         var hoteli = await _client.Cypher
-        //             .Match("(h:Hotel)-[:NALAZI_SE_U]->(sk:Skijaliste)")
-        //             .Where((Skijaliste sk) => sk.ID == skijaliste.ID)
-        //             .AndWhere((Hotel h) => h.Ocena >= zahtev.MinOcenaHotela)
-        //             .AndWhere((Hotel h) => h.Udaljenost <= zahtev.MaxUdaljenostHotela)
-        //             .Return(h => h.As<Hotel>())
-        //             .ResultsAsync;
-
-        //         if (!hoteli.Any()) continue;
-
-        //         // Dohvati sve restorane za skijalište
-        //         var restorani = await _client.Cypher
-        //             .Match("(r:Restoran)-[:PRIPADA]->(sk:Skijaliste)")
-        //             .Where((Skijaliste sk) => sk.ID == skijaliste.ID)
-        //             .Return(r => r.As<Restoran>())
-        //             .ResultsAsync;
-
-        //         if (!restorani.Any()) continue;
-
-        //         foreach (var hotel in hoteli)
-        //         {
-        //             foreach (var restoran in restorani)
-        //             {
-        //                 // Kalkulacija troškova
-        //                 var cenaSkiPasa = skijaliste.CenaSkiPasa * zahtev.BrojDana * zahtev.BrojOsoba;
-        //                 var cenaHotela = zahtev.BrojOsoba switch
-        //                 {
-        //                     <= 2 => hotel.CenaDvokrevetneSobe,
-        //                     <= 3 => hotel.CenaTrokrevetneSobe,
-        //                     <= 4 => hotel.CenaCetvorokrevetneSobe,
-        //                     _ => hotel.CenaPetokrevetneSobe
-        //                 } * zahtev.BrojDana;
-        //                 var cenaRestorana = restoran.ProsecnaCena * zahtev.BrojOsoba * zahtev.BrojDana;
-
-        //                 var ukupno = cenaSkiPasa + cenaHotela + cenaRestorana;
-
-        //                 if (ukupno <= zahtev.MaxBudzet)
-        //                 {
-        //                     opcije.Add(new OpcionaPonuda
-        //                     {
-        //                         Skijaliste = skijaliste,
-        //                         Hotel = hotel,
-        //                         Restoran = restoran,
-        //                         UkupnaCena = ukupno
-        //                     });
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     return Ok(opcije);
-        // }
-
 
     }
 }

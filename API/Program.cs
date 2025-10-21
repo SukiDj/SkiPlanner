@@ -59,54 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-#region WebSocket
-// WebSockets - pocetak
-// app.UseWebSockets();
-// app.Map("/ws", async context =>
-// {
-//     if (context.WebSockets.IsWebSocketRequest)
-//     {
-//         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-//         var redisService = context.RequestServices.GetRequiredService<RedisService>();
-
-//         redisService.SubscribeToNotifications("notifikacije", async (message) =>
-//         {
-//             if (webSocket.State == WebSocketState.Open)
-//             {
-//                 var buffer = Encoding.UTF8.GetBytes(message);
-//                 await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
-//             }
-//         });
-
-//         // Drži konekciju otvorenom dok je klijent povezan
-//         while (webSocket.State == WebSocketState.Open)
-//         {
-//             await Task.Delay(1000);
-//         }
-//     }
-//     else
-//     {
-//         context.Response.StatusCode = 400;
-//     }
-// });
-// kraj
-#endregion WebSocket
-
 app.UseWebSockets();
-
-
-// app.Use(async (context, next) =>
-// {
-//     if (context.Request.Path == "/ws/notifications")
-//     {
-//         var wsService = context.RequestServices.GetRequiredService<WebSocketService>();
-//         await wsService.HandleWebSocketAsync(context);
-//     }
-//     else
-//     {
-//         await next();
-//     }
-// });
 
 app.Map("/ws", async context =>
 {

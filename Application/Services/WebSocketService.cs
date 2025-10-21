@@ -27,32 +27,7 @@ namespace Application.Services
 
             if (string.IsNullOrEmpty(userId))
             {
-                await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Token nije prosleđen", CancellationToken.None);
-                return;
-            }
-
-            // var handler = new JwtSecurityTokenHandler();
-            // JwtSecurityToken jwtToken;
-
-            // try
-            // {
-            //     jwtToken = handler.ReadJwtToken(token);
-            // }
-            // catch
-            // {
-            //     await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Neispravan token", CancellationToken.None);
-            //     return;
-            // }
-
-            // var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
-
-            Console.WriteLine("");
-            Console.WriteLine($"✅ Korisnik {userId} povezan na WebSocket");
-            Console.WriteLine("");
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Nevalidan korisnik", CancellationToken.None);
+                await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Korisnik nije prosleđen", CancellationToken.None);
                 return;
             }
 
@@ -61,7 +36,7 @@ namespace Application.Services
             {
                 _subscriptions.AddConnection(sk.Ime, socket);
 
-                // 🔔 Kada Redis objavi poruku, prosledi kroz WebSocket
+                // Kada Redis objavi poruku, prosledi kroz WebSocket
                 _redis.SubscribeToNotifications(sk.Ime, async (ch, msg) =>
                 {
                     await _subscriptions.NotifySubscribersAsync(sk.Ime, msg);
@@ -81,7 +56,6 @@ namespace Application.Services
                     // Ako frontend pošalje poruku da osveži pretplate
                     if (message.StartsWith("refresh_subscriptions", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine($"🔁 Osvežavam pretplate za korisnika {userId}...");
 
                         // Ukloni stare WebSocket konekcije
                         _subscriptions.RemoveConnection(socket);
@@ -98,10 +72,6 @@ namespace Application.Services
                                 await _subscriptions.NotifySubscribersAsync(sk.Ime, msg);
                             });
                         }
-
-                        // Pošalji potvrdu nazad
-                        // var msg = Encoding.UTF8.GetBytes("✅ Pretplate osvežene");
-                        // await socket.SendAsync(msg, WebSocketMessageType.Text, true, CancellationToken.None);
 
                         continue;
                     }

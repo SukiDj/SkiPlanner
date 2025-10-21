@@ -262,7 +262,7 @@ namespace API.Controllers
             var slicnaSkijalista = await _client.Cypher
                 .Match("(k:Korisnik)-[:POSETIO]->(p:Skijaliste)")
                 .Match("(p)-[:SLICNO_SKIJALISTE]-(slicno:Skijaliste)")
-                .Where("k.ID = $korisnikId")// NOT EXISTS((k)-[:POSETIO]->(slicno)) AND 
+                .Where("k.ID = $korisnikId")
                 .WithParam("korisnikId", korisnikId)
                 .Return(slicno => slicno.As<Skijaliste>())
                 .ResultsAsync;
@@ -293,7 +293,7 @@ namespace API.Controllers
                     .Match("(k:Korisnik)-[:POSETIO]->(h:Hotel)")
                     .Match("(h)-[:SLICAN_HOTEL]-(slicno:Hotel)")
                     .Match("(slicno)-[:NALAZI_SE_U]->(skij:Skijaliste)")
-                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")//  AND NOT EXISTS((k)-[:POSETIO]->(slicno))
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")
                     .WithParams(new
                     {
                         skijalisteId = skijaliste.ID,
@@ -324,7 +324,7 @@ namespace API.Controllers
                     .Match("(k:Korisnik)-[:POSETIO]->(r:Restoran)")
                     .Match("(r)-[:SLICAN_RESTORAN]-(slicno:Restoran)")
                     .Match("(slicno)-[:PRIPADA]->(skij:Skijaliste)")
-                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")//  AND NOT EXISTS((k)-[:POSETIO]->(slicno))
+                    .Where("skij.ID = $skijalisteId AND k.ID = $korId")
                     .WithParams(new
                     {
                         skijalisteId = skijaliste.ID,

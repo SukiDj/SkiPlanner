@@ -16,8 +16,8 @@ namespace API.Extensions
                 itemsPerPage,
                 totalItems,
                 totalPages
-            };//da ti omogucim diko da mozes od klijent stranu da pokupis ovaj info kroz header
-            response.Headers.Append("Pagination", JsonSerializer.Serialize(paginationHeader));// promena iz add u append!?
+            };
+            response.Headers.Append("Pagination", JsonSerializer.Serialize(paginationHeader));
         }
     }
 }

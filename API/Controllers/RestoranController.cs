@@ -168,26 +168,6 @@ namespace API.Controllers
             return Ok($"Restoran sa ID-jem {id} je uspešno ažuriran.");
         }
 
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> ObrisiRestoran(Guid id)
-        // {
-        //     var existingRestoran = await _client.Cypher
-        //         .Match("(r:Restoran)")
-        //         .Where((Restoran r) => r.ID == id)
-        //         .Return(r => r.As<Restoran>())
-        //         .ResultsAsync;
-
-        //     if (existingRestoran.SingleOrDefault() == null)
-        //         return NotFound($"Restoran sa ID-jem {id} ne postoji.");
-
-        //     await _client.Cypher
-        //         .Match("(r:Restoran)")
-        //         .Where((Restoran r) => r.ID == id)
-        //         .Delete("r")
-        //         .ExecuteWithoutResultsAsync();
-
-        //     return Ok($"Restoran sa ID-jem {id} je uspešno obrisan.");
-        // }
         [HttpDelete("{id}")]
         public async Task<IActionResult> ObrisiRestoran(Guid id)
         {
@@ -203,7 +183,7 @@ namespace API.Controllers
             await _client.Cypher
                 .Match("(r:Restoran)")
                 .Where((Restoran r) => r.ID == id)
-                .DetachDelete("r")   // <-- OVDE PROMENA
+                .DetachDelete("r")
                 .ExecuteWithoutResultsAsync();
 
             return Ok($"Restoran sa ID-jem {id} je uspešno obrisan.");

@@ -32,7 +32,7 @@ public class BaseApiController : ControllerBase
             if (result == null) return NotFound();
             if (result.IsSuccess && result.Value != null)
             {
-                Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, result.Value.TotalCount, result.Value.TotalPages); //odavde pristupas na parametriti
+                Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, result.Value.TotalCount, result.Value.TotalPages);
                 return Ok(result.Value);
             }
 
