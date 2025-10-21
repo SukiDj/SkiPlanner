@@ -153,6 +153,8 @@ export default class SkiSlopeStore {
 
     loadblueSSlope = async (id:string) =>{
         try{
+          if(this.blueSkiSlopeRegistry.size !== 0)
+              this.blueSkiSlopeRegistry.clear();
             const blue : SkiSlope[] = await agent.skiSlope.list(id,'plava');
             runInAction(()=>{
                 blue.forEach(blue=>{
@@ -167,6 +169,8 @@ export default class SkiSlopeStore {
 
     loadBlackSSlope = async (id:string) =>{
         try{
+          if(this.blackSkiSlopeRegistry.size !== 0)
+              this.blackSkiSlopeRegistry.clear();
             const black : SkiSlope[] = await agent.skiSlope.list(id,'crna');
             runInAction(()=>{
                 black.forEach(black=>{
@@ -181,6 +185,8 @@ export default class SkiSlopeStore {
 
     loadGreenSSlope = async (id:string) =>{
         try{
+          if(this.greenSkiSlopeRegistry.size !== 0)
+              this.greenSkiSlopeRegistry.clear();
             const green : SkiSlope[] = await agent.skiSlope.list(id,'zelena');
             runInAction(()=>{
                 green.forEach(green=>{

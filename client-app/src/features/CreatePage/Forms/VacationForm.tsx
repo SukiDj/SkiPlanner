@@ -27,7 +27,7 @@ const VacationForm = () =>{
 
 
       const initialValues : Vacation = {
-        idSkijalista : "",
+        idSkijalista : null,
         minBrojStaza : 0,
         tezina: "",
         minDuzinaStaze: 0,

@@ -48,7 +48,7 @@ const Recommendations = () => {
       setSelectedRestaurant(selectedOption.restoran);
     }
   };
-
+console.log(getRecommendations)
   return (
     <>
       <Grid container style={{ justifyContent: "center" }} columns={1}>

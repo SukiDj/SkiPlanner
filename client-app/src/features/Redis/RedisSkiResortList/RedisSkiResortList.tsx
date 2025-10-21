@@ -11,7 +11,7 @@ import { s } from "motion/react-client";
 const SkiResortList = () => {
 
     const {redisSkiResort, userStore} = useStore();
-    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort, getAllSubbed, getAllSubbedSkiR, subscribe,unSubscribe } = redisSkiResort;
+    const {getAllResorts, loadAllResorts, updateSkiResort,deleteSkiResort, getAllSubbed, getAllSubbedSkiR, subscribe,unSubscribe,getSkiResortNames } = redisSkiResort;
     const {curentUser} = userStore;
     const [selectedResort, setSelectedResort] = useState<RedisSkiResort | null>(null);
     
@@ -41,6 +41,7 @@ const SkiResortList = () => {
 
     useEffect(()=>{
         loadData();
+        getSkiResortNames();
     },[])
 
     const handleSubscribe =async (name:string) =>{

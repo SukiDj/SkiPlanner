@@ -112,14 +112,22 @@ export default class UserStore {
         if(this.recommendations.size!=0)
             this.recommendations.clear();
         runInAction(() => {
-            recommendations.forEach((recom) => {
-                this.recommendations.set(recom.id, {
-                    ...recom,
-                    hoteli: Array.isArray(recom.hoteli) ? recom.hoteli : [],
-                    restorani: Array.isArray(recom.restorani) ? recom.restorani : []
-                });
-            });
-        });
+      this.recommendations.clear();
+
+      recommendations.forEach((recom: any) => {
+        const ski = recom.skijaliste;
+        if (ski && ski.id) {
+          const formatted: Recommendation = {
+            id: ski.id,                
+            skijaliste: ski,
+            hoteli: Array.isArray(recom.hoteli) ? recom.hoteli : [],
+            restorani: Array.isArray(recom.restorani) ? recom.restorani : []
+          };
+
+          this.recommendations.set(ski.id, formatted);
+        }
+      });
+    });
     } catch (err) {
         console.error(err);
     }

@@ -14,6 +14,7 @@ export default class RedisSkiResortStore {
     isSkyResortEditing : boolean = false;
     loading: boolean = false;
     subscribedResorts =new Map<string,RedisSkiResort>();
+    skiResorts = new Map<string,RedisSkiResort>();
 
     constructor(){
         makeAutoObservable(this)
@@ -26,8 +27,12 @@ export default class RedisSkiResortStore {
 
     setLoading = (val: boolean) => this.loading = val;
 
+     get getResorts(){
+      return Array.from(this.skiResorts.values());
+    }
+
     get getSkiResortOptions(){
-      return Array.from(this.getAllResorts.values()).map((skiResort : RedisSkiResort) =>({
+      return Array.from(this.getResorts.values()).map((skiResort) =>({
         key : skiResort.ime,
         text : skiResort.ime,
         value : skiResort.ime
@@ -39,8 +44,30 @@ export default class RedisSkiResortStore {
     this.selectedResort!.lng = lng;
   }
 
+  setSkiReorts = (skiResort:RedisSkiResort) =>{
+    this.skiResorts.set(skiResort.ime!,skiResort);
+  }
 
-
+  getSkiResortNames = async () =>{
+    try{
+      const data = await agent.skiResort.list();
+      const allResortNames = data.map((resort: any) => resort);
+      const subscribedNames = Array.from(this.resorts.keys());
+      const unsubscribedResorts = allResortNames.filter(
+        (skiResort: RedisSkiResort) => !subscribedNames.includes(skiResort.ime)
+      );
+      runInAction(()=>{
+          unsubscribedResorts.forEach(resort=>{
+            this.setSkiReorts(resort);
+          });
+        })
+      return unsubscribedResorts
+    }
+    catch(err){
+      console.log(err);
+    }
+    
+  } 
 
     setSelectedResort = (resort:any) => {
         this.selectedResort = resort
